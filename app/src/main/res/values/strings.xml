@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">File Explorer</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="flat_icon_credit_txt">Icon made by [https://www.flaticon.com/authors/smashicons] from www.flaticon.com</string>
+</resources>
