@@ -4,15 +4,21 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.MimeTypeFilter;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -27,75 +33,71 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import cj.com.fileexplorer.adapters.DirectoryAdapter;
+import cj.com.fileexplorer.broadcast_receivers.ListToGridBroadcastReceiver;
 import cj.com.fileexplorer.presenters.DirectoryPresenter;
+import cj.com.fileexplorer.views.BaseFragment;
 import cj.com.fileexplorer.views.CreditsActivity;
 import cj.com.fileexplorer.views.DirectoryView;
 import cj.com.filemanager.models.FileModel;
 
 import static cj.com.filemanager.FileUtils.getMimeType;
 
-public class MainActivity extends AppCompatActivity implements DirectoryView, DirectoryAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity-";
-    public static final int PERMISSION_EXTERNAL_STORAGE_REQUEST_CODE = 100;
 
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    // Keeps track if changed to grid was selected.
     boolean mChangedToGrid = true;
-    private RecyclerView mDirectoryRecyclerView;
-    private DirectoryAdapter mDirectoryAdapter;
-
-    private static final int NUMBER_OF_COLUMNS_IN_GRID = 2;
-
-    private DirectoryPresenter mDirectoryPresenter;
-    private Toolbar mainToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO: Add Navigation Drawer to allow for the user to select internal storage vs ext.
+        // external storage shortcuts.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDirectoryPresenter = new DirectoryPresenter(this);
 
-        mainToolbar = findViewById(R.id.mainToolbar);
-        setSupportActionBar(mainToolbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_close
+        ) {
 
-        mDirectoryAdapter = new DirectoryAdapter(this);
-        mDirectoryRecyclerView = findViewById(R.id.fileRecyclerView);
-        mDirectoryRecyclerView.setAdapter(mDirectoryAdapter);
-        mDirectoryRecyclerView.setHasFixedSize(true);
-        mDirectoryRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext(),
-                LinearLayoutManager.VERTICAL, false));
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getActionBar().setTitle(R.string.app_name);
+            }
 
-        if (savedInstanceState != null) {
-            mDirectoryPresenter.onResumeState(savedInstanceState);
-        }
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getActionBar().setTitle(R.string.app_name);
+            }
+        };
 
-        requestFilePermissions();
-    }
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
 
-    private void requestFilePermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest
-                            .permission.WRITE_EXTERNAL_STORAGE} ,
-                    PERMISSION_EXTERNAL_STORAGE_REQUEST_CODE);
-        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch(requestCode) {
-            case PERMISSION_EXTERNAL_STORAGE_REQUEST_CODE:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mDirectoryPresenter.onFilesRequest();
-                }
-        }
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         final MenuItem listMenuItem = menu.add("Grid");
         listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                 .ic_view_module_black_24dp));
@@ -107,23 +109,19 @@ public class MainActivity extends AppCompatActivity implements DirectoryView, Di
                     listMenuItem.setTitle("List");
                     listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                             .ic_view_list_black_24dp));
-                    mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getBaseContext
-                            (), NUMBER_OF_COLUMNS_IN_GRID));
-                    mDirectoryAdapter.notifyDataSetChanged();
-
                     // Broadcast event that list should be shown in a grid format.
-                    LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(new Intent());
+                    Intent intent = new Intent(ListToGridBroadcastReceiver.INTENT_FILTER_STRING);
+                    intent.putExtra(ListToGridBroadcastReceiver.CHANGE_TO_GRID, true);
+                    LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
                     mChangedToGrid = false;
                 } else {
                     listMenuItem.setTitle("Grid");
                     listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                             .ic_view_module_black_24dp));
-                    mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext(),
-                            LinearLayoutManager.VERTICAL, false));
-                    mDirectoryAdapter.notifyDataSetChanged();
-
                     // Broadcast event that list should be shown in a list format.
-                    LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(new Intent());
+                    Intent intent = new Intent(ListToGridBroadcastReceiver.INTENT_FILTER_STRING);
+                    intent.putExtra(ListToGridBroadcastReceiver.CHANGE_TO_LIST, true);
+                    LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
                     mChangedToGrid = true;
                 }
 
@@ -146,91 +144,17 @@ public class MainActivity extends AppCompatActivity implements DirectoryView, Di
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        mDirectoryPresenter.onSaveInstanceState(outState);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onBackPressed() {
         // If the directory presenter does not return TRUE (implying that it will be handling the
         // on back pressed), then call the activities on back pressed to manage the activity stack.
-        if (!mDirectoryPresenter.onBackPressed()) {
-            super.onBackPressed();
-        }
-    }
+        List<Fragment> baseFragments = getSupportFragmentManager().getFragments();
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Save off last visited directory into shared preferences, so that it can be resumed at
-        // a later point.
-    }
-
-    @Override
-    public void setDirectoryTitle(String title) {
-        mainToolbar.setTitle(title);
-    }
-
-    @Override
-    public void showFiles(ArrayList<FileModel> fileModels) {
-        mDirectoryAdapter.setFiles(fileModels);
-    }
-
-    @Override
-    public void showExtendedInformationOnFile(FileModel fileModel) {
-        Uri fileUri = FileProvider.getUriForFile(getBaseContext(),
-                BuildConfig.APPLICATION_ID + ".provider", fileModel.getFile());
-
-        Cursor cursor = getContentResolver().query(fileUri, null, null, null, null);
-
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
-                int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
-
-
-                Toast.makeText(this, String.valueOf(fileModel.getFile().length()),
-                        Toast.LENGTH_SHORT)
-                        .show();
+        for (Fragment fragment : baseFragments) {
+            if (fragment != null && fragment.isVisible() && fragment instanceof BaseFragment){
+                if (!((BaseFragment) fragment).onBackPressed()) {
+                    super.onBackPressed();
+                }
             }
-
-            cursor.close();
         }
-    }
-
-    @Override
-    public void clearFiles() {
-        mDirectoryAdapter.clearFiles();
-    }
-
-    @Override
-    public void viewFile(FileModel fileModel) {
-        Intent myIntent = new Intent(Intent.ACTION_VIEW);
-        myIntent.setDataAndType(FileProvider.getUriForFile(getBaseContext(),
-                BuildConfig.APPLICATION_ID + ".provider", fileModel.getFile()),
-                getMimeType(fileModel.getFile().getAbsolutePath()));
-        myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(myIntent);
-    }
-
-    @Override
-    public void navigateToInternalStorage() {
-
-    }
-
-    @Override
-    public void navigateToExternalStorage() {
-
-    }
-
-    @Override
-    public void onShortPress(FileModel fileModel) {
-        mDirectoryPresenter.onShortFileModelPress(fileModel);
-    }
-
-    @Override
-    public void onLongPress(FileModel fileModel) {
-        mDirectoryPresenter.onLongFileModelPress(fileModel);
     }
 }

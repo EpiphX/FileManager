@@ -1,15 +1,19 @@
 package cj.com.fileexplorer.views;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,6 +26,7 @@ import java.util.ArrayList;
 import cj.com.fileexplorer.BuildConfig;
 import cj.com.fileexplorer.R;
 import cj.com.fileexplorer.adapters.DirectoryAdapter;
+import cj.com.fileexplorer.broadcast_receivers.ListToGridBroadcastReceiver;
 import cj.com.fileexplorer.presenters.DirectoryPresenter;
 import cj.com.filemanager.models.FileModel;
 
@@ -31,7 +36,8 @@ import static cj.com.filemanager.FileUtils.getMimeType;
  * Created by EpiphX on 1/14/18.
  */
 
-public class DirectoryFragment extends Fragment implements DirectoryView, DirectoryAdapter.OnItemClickListener {
+public class DirectoryFragment extends BaseFragment implements DirectoryView, DirectoryAdapter
+        .OnItemClickListener {
     // Request code for permissions from
     public static final int PERMISSION_EXTERNAL_STORAGE_REQUEST_CODE = 100;
 
@@ -43,6 +49,40 @@ public class DirectoryFragment extends Fragment implements DirectoryView, Direct
 
     private DirectoryPresenter mDirectoryPresenter;
     private Toolbar mainToolbar;
+
+    private ListToGridBroadcastReceiver mListToGridBroadcastReceiver = new ListToGridBroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                boolean changeToGrid = intent.getBooleanExtra(ListToGridBroadcastReceiver
+                        .CHANGE_TO_GRID, false);
+
+                boolean changeToList = intent.getBooleanExtra(ListToGridBroadcastReceiver
+                        .CHANGE_TO_LIST, false);
+
+                if (changeToGrid) {
+                    changeListToGrid();
+                }
+
+                if (changeToList) {
+                    changeGridToList();
+                }
+            }
+        }
+    };
+
+    @Override
+    public void changeListToGrid() {
+        mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
+        mDirectoryAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void changeGridToList() {
+        mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                LinearLayoutManager.VERTICAL, false));
+        mDirectoryAdapter.notifyDataSetChanged();
+    }
 
     public static DirectoryFragment getInstance(Bundle arguments) {
         DirectoryFragment directoryFragment = new DirectoryFragment();
@@ -58,7 +98,7 @@ public class DirectoryFragment extends Fragment implements DirectoryView, Direct
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_main, container, false);
+        return inflater.inflate(R.layout.fragment_directory, container, false);
     }
 
     @Override
@@ -68,6 +108,7 @@ public class DirectoryFragment extends Fragment implements DirectoryView, Direct
         mDirectoryPresenter = new DirectoryPresenter(this);
 
         mainToolbar = view.findViewById(R.id.mainToolbar);
+        mainToolbar.setTitleTextColor(Color.WHITE);
 
         mDirectoryAdapter = new DirectoryAdapter(this);
         mDirectoryRecyclerView = view.findViewById(R.id.fileRecyclerView);
@@ -82,6 +123,26 @@ public class DirectoryFragment extends Fragment implements DirectoryView, Direct
         }
 
         requestFilePermissions();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver
+                (mListToGridBroadcastReceiver, new IntentFilter(ListToGridBroadcastReceiver
+                        .INTENT_FILTER_STRING));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mListToGridBroadcastReceiver);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        mDirectoryPresenter.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
     }
 
     private void requestFilePermissions() {
@@ -101,6 +162,11 @@ public class DirectoryFragment extends Fragment implements DirectoryView, Direct
                     mDirectoryPresenter.onFilesRequest();
                 }
         }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        return mDirectoryPresenter.onBackPressed();
     }
 
     @Override

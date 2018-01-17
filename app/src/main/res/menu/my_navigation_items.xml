@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/external_storage" android:icon="@drawable/ic_folder_black_24dp"/>
+    <item android:title="@string/internal_storage" android:icon="@drawable/ic_insert_drive_file_black_24dp"/>
+</menu>

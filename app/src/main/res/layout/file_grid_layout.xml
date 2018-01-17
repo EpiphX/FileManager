@@ -18,7 +18,6 @@
             android:id="@+id/imageView"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:scaleType="center"
             android:src="@drawable/ic_insert_drive_file_black_24dp"
             app:layout_constraintBottom_toTopOf="@+id/include"
             app:layout_constraintEnd_toEndOf="@+id/include"
