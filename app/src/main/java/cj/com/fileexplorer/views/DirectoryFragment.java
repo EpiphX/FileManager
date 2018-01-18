@@ -17,6 +17,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +28,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import cj.com.fileexplorer.BuildConfig;
-import cj.com.fileexplorer.MainActivity;
 import cj.com.fileexplorer.R;
 import cj.com.fileexplorer.adapters.DirectoryAdapter;
 import cj.com.fileexplorer.broadcast_receivers.ListToGridBroadcastReceiver;
+import cj.com.fileexplorer.broadcast_receivers.NavigateBroadcastReceiver;
 import cj.com.fileexplorer.presenters.DirectoryPresenter;
 import cj.com.filemanager.models.FileModel;
 
@@ -74,6 +75,23 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
                 if (changeToList) {
                     changeGridToList();
+                }
+            }
+        }
+    };
+
+    private NavigateBroadcastReceiver mNavigateBroadcastReceiver = new NavigateBroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                String navigateAction = intent.getStringExtra(NAVIGATE_ACTION);
+                switch (navigateAction) {
+                    case NAVIGATE_TO_EXTERNAL_STORAGE:
+                        navigateToExternalStorage();
+                        break;
+                    case NAVIGATE_TO_INTERNAL_STORAGE:
+                        navigateToInternalStorage(getContext());
+                        break;
                 }
             }
         }
@@ -131,7 +149,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mDirectoryRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         if (mShowGrid) {
-            mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
+            mDirectoryRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(NUMBER_OF_COLUMNS_IN_GRID, StaggeredGridLayoutManager.VERTICAL));
         } else {
             mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                     LinearLayoutManager.VERTICAL, false));
@@ -155,12 +173,16 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         LocalBroadcastManager.getInstance(getContext()).registerReceiver
                 (mListToGridBroadcastReceiver, new IntentFilter(ListToGridBroadcastReceiver
                         .INTENT_FILTER_STRING));
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver
+                (mNavigateBroadcastReceiver, new IntentFilter(NavigateBroadcastReceiver
+                        .INTENT_FILTER_STRING));
     }
 
     @Override
     public void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mListToGridBroadcastReceiver);
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mNavigateBroadcastReceiver);
     }
 
     @Override
@@ -212,13 +234,13 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     }
 
     @Override
-    public void navigateToInternalStorage() {
-
+    public void navigateToInternalStorage(Context context) {
+        mDirectoryPresenter.onNavigateToInternalStorage(getContext());
     }
 
     @Override
     public void navigateToExternalStorage() {
-
+        mDirectoryPresenter.onNavigateToExternalStorage();
     }
 
     @Override

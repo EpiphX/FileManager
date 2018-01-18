@@ -1,5 +1,6 @@
 package cj.com.filemanager;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileObserver;
@@ -12,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import cj.com.filemanager.models.FileModel;
+
+// TODO: This is more like a directory navigator. Separate the file oriented stuff into its own
+// class.
 
 public class FileManager {
     private static final String TAG = "Files";
@@ -130,8 +134,8 @@ public class FileManager {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
-    public String getInternalStorageDirectory() {
-        return Environment.getRootDirectory().getAbsolutePath();
+    public String getInternalStorageDirectory(Context context) {
+        return context.getFilesDir().getAbsolutePath();
     }
 
 

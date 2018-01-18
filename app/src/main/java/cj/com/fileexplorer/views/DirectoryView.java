@@ -1,5 +1,7 @@
 package cj.com.fileexplorer.views;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 
 import cj.com.filemanager.models.FileModel;
@@ -16,7 +18,7 @@ public interface DirectoryView {
     void setDirectoryTitle(String title);
     void showFiles(ArrayList<FileModel> fileModels);
     void clearFiles();
-    void navigateToInternalStorage();
+    void navigateToInternalStorage(Context context);
     void navigateToExternalStorage();
     void viewFile(FileModel fileModel);
 

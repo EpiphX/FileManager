@@ -1,8 +1,13 @@
 package cj.com.fileexplorer.presenters;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import cj.com.fileexplorer.views.DirectoryView;
 import cj.com.filemanager.FileManager;
@@ -25,7 +30,22 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
         DirectoryView directoryView = mDirectoryViewWeakReference.get();
 
         if (directoryView != null) {
-            directoryView.showFiles(mFileManager.getAllFiles());
+            ArrayList<FileModel> fileModels = mFileManager.getAllFiles();
+//            Collections.sort(fileModels, new Comparator<FileModel>() {
+//                @Override
+//                public int compare(FileModel fileModel, FileModel t1) {
+//                    if (fileModel.getFile().isDirectory() && t1.getFile().isDirectory()) {
+//                        return 0;
+//                    } else if (!fileModel.getFile().isDirectory() && t1.getFile().isDirectory()) {
+//                        return 1;
+//                    } else if (fileModel.getFile().isDirectory() && !t1.getFile().isDirectory()) {
+//                        return -1;
+//                    } else {
+//                        return 0;
+//                    }
+//                }
+//            });
+            directoryView.showFiles(fileModels);
             directoryView.setDirectoryTitle(mFileManager.getCurrentDirectoryPath());
         }
     }
@@ -43,6 +63,26 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
         } else {
             directoryView.viewFile(fileModel);
         }
+    }
+
+    public void onNavigateToExternalStorage() {
+        if (mFileManager.getCurrentDirectoryPath().equals(mFileManager
+                .getExternalStorageDirectory())) {
+            return;
+        }
+
+        mFileManager.navigateToDirectory(mFileManager.getExternalStorageDirectory());
+        onFilesRequest();
+    }
+
+    public void onNavigateToInternalStorage(Context context) {
+        if (mFileManager.getCurrentDirectoryPath().equals(mFileManager
+                .getInternalStorageDirectory(context))) {
+            return;
+        }
+
+        mFileManager.navigateToDirectory(mFileManager.getInternalStorageDirectory(context));
+        onFilesRequest();
     }
 
     public void onLongFileModelPress(FileModel fileModel) {

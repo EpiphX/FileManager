@@ -1,50 +1,28 @@
 package cj.com.fileexplorer;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.database.Cursor;
-import android.graphics.Color;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.OpenableColumns;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.content.MimeTypeFilter;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import cj.com.fileexplorer.adapters.DirectoryAdapter;
 import cj.com.fileexplorer.broadcast_receivers.ListToGridBroadcastReceiver;
-import cj.com.fileexplorer.presenters.DirectoryPresenter;
+import cj.com.fileexplorer.broadcast_receivers.NavigateBroadcastReceiver;
 import cj.com.fileexplorer.views.BaseFragment;
 import cj.com.fileexplorer.views.CreditsActivity;
-import cj.com.fileexplorer.views.DirectoryView;
-import cj.com.filemanager.models.FileModel;
-
-import static cj.com.filemanager.FileUtils.getMimeType;
 
 public class MainActivity extends AppCompatActivity {
     public static final String CHANGED_TO_GRID_KEY = "CHANGED_TO_GRID_KEY";
@@ -52,9 +30,11 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private NavigationView mNavigationView;
 
     // Keeps track if changed to grid was selected.
     boolean mChangedToGrid = false;
+    private int mSelectedNavigationItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
 
-
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mNavigationView = findViewById(R.id.navigation);
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 mDrawerLayout,
@@ -96,6 +76,37 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             mChangedToGrid = savedInstanceState.getBoolean(CHANGED_TO_GRID_KEY, true);
         }
+
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.navigation_external_storage:
+                        // Post navigation to external storage.
+                        mSelectedNavigationItem = R.id.navigation_external_storage;
+                        Intent navigateToExternalIntent = new Intent(NavigateBroadcastReceiver
+                                .INTENT_FILTER_STRING);
+                        navigateToExternalIntent.putExtra(NavigateBroadcastReceiver
+                                .NAVIGATE_ACTION,
+                                NavigateBroadcastReceiver.NAVIGATE_TO_EXTERNAL_STORAGE);
+                        LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(navigateToExternalIntent);
+                        break;
+                    case R.id.navigation_internal_storage:
+                        // Post navigation to internal storage.
+                        mSelectedNavigationItem = R.id.navigation_internal_storage;
+                        Intent navigateToInternalIntent = new Intent(NavigateBroadcastReceiver
+                                .INTENT_FILTER_STRING);
+                        navigateToInternalIntent.putExtra(NavigateBroadcastReceiver
+                                .NAVIGATE_ACTION, NavigateBroadcastReceiver
+                                .NAVIGATE_TO_INTERNAL_STORAGE);
+                        LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(navigateToInternalIntent);
+                        break;
+                }
+
+                mDrawerLayout.closeDrawers();
+                return true;
+            }
+        });
     }
 
     @Override
