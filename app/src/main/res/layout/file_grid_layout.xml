@@ -8,22 +8,19 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/file_card_grid_size">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/file_card_grid_size"/>
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="168dp"
             android:src="@drawable/ic_insert_drive_file_black_24dp"
             android:scaleType="center"
             app:layout_constraintBottom_toTopOf="@+id/include"
             app:layout_constraintEnd_toEndOf="@+id/include"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            android:visibility="visible"/>
 
         <include
             android:id="@+id/include"

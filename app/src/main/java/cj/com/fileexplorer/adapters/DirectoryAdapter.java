@@ -22,6 +22,8 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     private final OnItemClickListener mOnItemClickListener;
     private ArrayList<FileModel> mFiles;
 
+    private boolean mShowGrid;
+
     public DirectoryAdapter(OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
         mFiles = new ArrayList<>();
@@ -35,7 +37,6 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,14 +58,14 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             holder.mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable
                     .ic_folder_black_24dp, 0,0,0);
 
-            holder.mFileImageView.setImageDrawable(ContextCompat.getDrawable(holder
-                    .mFileImageView.getContext(),
-                    R.drawable.ic_insert_drive_file_black_24dp));
+            holder.mFileImageView.setVisibility(View.GONE);
         } else {
             holder.mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(mFiles.get
                             (position).getFileIcon().getDrawableId(),
                     0,0,
                     0);
+
+            holder.mFileImageView.setVisibility(View.VISIBLE);
 
             Uri uri = Uri.fromFile(mFiles.get(position).getFile());
             Picasso.with(holder.mFileImageView.getContext())

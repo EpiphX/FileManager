@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 .ic_view_module_black_24dp));
         listMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        final MenuItem creditsMenuItem = menu.add(0,1,0,"Credits");
+        menu.add(0,1,0,"Credits");
 
         return true;
     }

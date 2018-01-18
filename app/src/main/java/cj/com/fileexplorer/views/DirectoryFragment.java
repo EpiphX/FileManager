@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,8 +51,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     private RecyclerView mDirectoryRecyclerView;
     private DirectoryAdapter mDirectoryAdapter;
 
-
-
     private DirectoryPresenter mDirectoryPresenter;
     private Toolbar mainToolbar;
     private TextView mainToolbarTitleTextView;
@@ -80,24 +79,14 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     @Override
     public void changeListToGrid() {
         mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
-        mDirectoryRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDirectoryAdapter.notifyDataSetChanged();
-            }
-        }, 30);
+        mDirectoryAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void changeGridToList() {
         mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false));
-        mDirectoryRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mDirectoryAdapter.notifyDataSetChanged();
-            }
-        }, 30);
+        mDirectoryAdapter.notifyDataSetChanged();
     }
 
     public static DirectoryFragment getInstance(Bundle arguments) {
@@ -109,6 +98,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mDirectoryPresenter = new DirectoryPresenter(this);
     }
 
     @Nullable
@@ -120,9 +110,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        mDirectoryPresenter = new DirectoryPresenter(this);
-
         mainToolbar = view.findViewById(R.id.mainToolbar);
         mainToolbarTitleTextView = mainToolbar.findViewById(R.id.mainToolbarTextView);
         mainToolbarTitleTextView.setTextColor(Color.WHITE);
@@ -139,7 +126,14 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
             mDirectoryPresenter.onResumeState(savedInstanceState);
         }
 
-        requestFilePermissions();
+        if (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission_group
+                .STORAGE) == PermissionChecker.PERMISSION_GRANTED) {
+            mDirectoryPresenter.onFilesRequest();
+        } else {
+            requestFilePermissions();
+        }
+
+
     }
 
     @Override
@@ -188,7 +182,9 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void setDirectoryTitle(String title) {
-        mainToolbarTitleTextView.setText(title);
+        if (mainToolbarTitleTextView != null) {
+            mainToolbarTitleTextView.setText(title);
+        }
     }
 
     @Override
