@@ -24,6 +24,8 @@ public class CreditsActivity extends AppCompatActivity implements CreditsView {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_credits);
 
+        Toolbar toolbar = findViewById(R.id.mainToolbar);
+        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mCreditsPresenter = new CreditsPresenter(this);

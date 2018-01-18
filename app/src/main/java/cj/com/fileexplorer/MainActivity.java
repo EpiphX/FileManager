@@ -57,10 +57,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO: Add Navigation Drawer to allow for the user to select internal storage vs ext.
         // external storage shortcuts.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = findViewById(R.id.mainToolbar);
+        setSupportActionBar(toolbar);
 
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -111,21 +113,11 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        final MenuItem listMenuItem = menu.add("Grid");
-        listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
-                .ic_view_module_black_24dp));
-        listMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        listMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+        switch (item.getItemId()) {
+            case 0:
                 if (mChangedToGrid) {
-                    listMenuItem.setTitle("List");
-                    listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
+                    item.setTitle("List");
+                    item.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                             .ic_view_list_black_24dp));
                     // Broadcast event that list should be shown in a grid format.
                     Intent intent = new Intent(ListToGridBroadcastReceiver.INTENT_FILTER_STRING);
@@ -133,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
                     LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
                     mChangedToGrid = false;
                 } else {
-                    listMenuItem.setTitle("Grid");
-                    listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
+                    item.setTitle("Grid");
+                    item.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                             .ic_view_module_black_24dp));
                     // Broadcast event that list should be shown in a list format.
                     Intent intent = new Intent(ListToGridBroadcastReceiver.INTENT_FILTER_STRING);
@@ -142,21 +134,26 @@ public class MainActivity extends AppCompatActivity {
                     LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
                     mChangedToGrid = true;
                 }
-
-                return true;
-            }
-        });
-
-        final MenuItem creditsMenuItem = menu.add("Credits");
-        creditsMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-        creditsMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
+                break;
+            case 1:
                 Intent intent = new Intent(MainActivity.this, CreditsActivity.class);
                 startActivity(intent);
-                return true;
-            }
-        });
+                break;
+
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        final MenuItem listMenuItem = menu.add(0,0,0,"Grid");
+        listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
+                .ic_view_module_black_24dp));
+        listMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+        final MenuItem creditsMenuItem = menu.add(0,1,0,"Credits");
 
         return true;
     }

@@ -20,6 +20,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.Picasso;
@@ -43,15 +45,16 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         .OnItemClickListener {
     // Request code for permissions from
     public static final int PERMISSION_EXTERNAL_STORAGE_REQUEST_CODE = 100;
+    private static final int NUMBER_OF_COLUMNS_IN_GRID = 2;
 
-    boolean mChangedToGrid = true;
     private RecyclerView mDirectoryRecyclerView;
     private DirectoryAdapter mDirectoryAdapter;
 
-    private static final int NUMBER_OF_COLUMNS_IN_GRID = 2;
+
 
     private DirectoryPresenter mDirectoryPresenter;
     private Toolbar mainToolbar;
+    private TextView mainToolbarTitleTextView;
 
     private ListToGridBroadcastReceiver mListToGridBroadcastReceiver = new ListToGridBroadcastReceiver() {
         @Override
@@ -121,7 +124,8 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mDirectoryPresenter = new DirectoryPresenter(this);
 
         mainToolbar = view.findViewById(R.id.mainToolbar);
-        mainToolbar.setTitleTextColor(Color.WHITE);
+        mainToolbarTitleTextView = mainToolbar.findViewById(R.id.mainToolbarTextView);
+        mainToolbarTitleTextView.setTextColor(Color.WHITE);
 
         mDirectoryAdapter = new DirectoryAdapter(this);
         mDirectoryRecyclerView = view.findViewById(R.id.fileRecyclerView);
@@ -184,7 +188,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void setDirectoryTitle(String title) {
-        mainToolbar.setTitle(title);
+        mainToolbarTitleTextView.setText(title);
     }
 
     @Override
@@ -214,7 +218,14 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
                 BuildConfig.APPLICATION_ID + ".provider", fileModel.getFile()),
                 getMimeType(fileModel.getFile().getAbsolutePath()));
         myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(myIntent);
+
+        if (myIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(myIntent);
+        } else {
+            Toast.makeText(getContext(), "No activity found to handle file type " + getMimeType(fileModel.getFile().getAbsolutePath()),
+                    Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     @Override
