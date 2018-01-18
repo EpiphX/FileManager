@@ -21,6 +21,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.LruCache;
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
 import cj.com.fileexplorer.BuildConfig;
@@ -74,14 +77,24 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     @Override
     public void changeListToGrid() {
         mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
-        mDirectoryAdapter.notifyDataSetChanged();
+        mDirectoryRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDirectoryAdapter.notifyDataSetChanged();
+            }
+        }, 30);
     }
 
     @Override
     public void changeGridToList() {
         mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false));
-        mDirectoryAdapter.notifyDataSetChanged();
+        mDirectoryRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mDirectoryAdapter.notifyDataSetChanged();
+            }
+        }, 30);
     }
 
     public static DirectoryFragment getInstance(Bundle arguments) {

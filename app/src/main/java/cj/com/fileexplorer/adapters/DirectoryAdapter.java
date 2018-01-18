@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -66,7 +67,8 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
                     0);
 
             Uri uri = Uri.fromFile(mFiles.get(position).getFile());
-            Picasso.with(holder.mFileImageView.getContext()).load(uri)
+            Picasso.with(holder.mFileImageView.getContext())
+                    .load(uri)
                     .placeholder(R.drawable.ic_insert_drive_file_black_24dp)
                     .fit()
                     .into(holder.mFileImageView);

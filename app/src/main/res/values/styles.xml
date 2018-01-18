@@ -10,9 +10,12 @@
         <item name="android:windowBackground">@color/primaryWindowBackgroundColor</item>
     </style>
 
+
     <style name="AppTitleTextAppearance" parent="Base.TextAppearance.AppCompat.Title">
         <item name="android:titleTextColor">@android:color/white</item>
     </style>
+
+
 
 
     <!--Theme for our splash screen-->
