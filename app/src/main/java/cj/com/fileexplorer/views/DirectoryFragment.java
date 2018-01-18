@@ -24,12 +24,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.LruCache;
-import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
 
 import cj.com.fileexplorer.BuildConfig;
+import cj.com.fileexplorer.MainActivity;
 import cj.com.fileexplorer.R;
 import cj.com.fileexplorer.adapters.DirectoryAdapter;
 import cj.com.fileexplorer.broadcast_receivers.ListToGridBroadcastReceiver;
@@ -46,6 +44,9 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         .OnItemClickListener {
     // Request code for permissions from
     public static final int PERMISSION_EXTERNAL_STORAGE_REQUEST_CODE = 100;
+
+    public static final String SHOW_GRID_LAYOUT_KEY = "SHOW_GRID_LAYOUT_KEY";
+
     private static final int NUMBER_OF_COLUMNS_IN_GRID = 2;
 
     private RecyclerView mDirectoryRecyclerView;
@@ -54,6 +55,8 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     private DirectoryPresenter mDirectoryPresenter;
     private Toolbar mainToolbar;
     private TextView mainToolbarTitleTextView;
+
+    private boolean mShowGrid = false;
 
     private ListToGridBroadcastReceiver mListToGridBroadcastReceiver = new ListToGridBroadcastReceiver() {
         @Override
@@ -80,6 +83,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     public void changeListToGrid() {
         mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
         mDirectoryAdapter.notifyDataSetChanged();
+        mShowGrid = true;
     }
 
     @Override
@@ -87,6 +91,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false));
         mDirectoryAdapter.notifyDataSetChanged();
+        mShowGrid = false;
     }
 
     public static DirectoryFragment getInstance(Bundle arguments) {
@@ -99,6 +104,11 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDirectoryPresenter = new DirectoryPresenter(this);
+
+        if (savedInstanceState != null) {
+            mShowGrid = savedInstanceState.getBoolean(SHOW_GRID_LAYOUT_KEY,
+                    false);
+        }
     }
 
     @Nullable
@@ -119,8 +129,13 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mDirectoryRecyclerView.setAdapter(mDirectoryAdapter);
         mDirectoryRecyclerView.setHasFixedSize(true);
         mDirectoryRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.VERTICAL, false));
+
+        if (mShowGrid) {
+            mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
+        } else {
+            mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                    LinearLayoutManager.VERTICAL, false));
+        }
 
         if (savedInstanceState != null) {
             mDirectoryPresenter.onResumeState(savedInstanceState);
@@ -132,8 +147,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         } else {
             requestFilePermissions();
         }
-
-
     }
 
     @Override
@@ -152,6 +165,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(SHOW_GRID_LAYOUT_KEY, mShowGrid);
         mDirectoryPresenter.onSaveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }

@@ -47,13 +47,14 @@ import cj.com.filemanager.models.FileModel;
 import static cj.com.filemanager.FileUtils.getMimeType;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String CHANGED_TO_GRID_KEY = "CHANGED_TO_GRID_KEY";
     private static final String TAG = "MainActivity-";
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
 
     // Keeps track if changed to grid was selected.
-    boolean mChangedToGrid = true;
+    boolean mChangedToGrid = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,10 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        if (savedInstanceState != null) {
+            mChangedToGrid = savedInstanceState.getBoolean(CHANGED_TO_GRID_KEY, true);
+        }
     }
 
     @Override
@@ -106,6 +111,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean(CHANGED_TO_GRID_KEY, mChangedToGrid);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
         // true, then it has handled the app icon touch event
@@ -115,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case 0:
-                if (mChangedToGrid) {
+                if (!mChangedToGrid) {
                     item.setTitle("List");
                     item.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                             .ic_view_list_black_24dp));
@@ -123,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(ListToGridBroadcastReceiver.INTENT_FILTER_STRING);
                     intent.putExtra(ListToGridBroadcastReceiver.CHANGE_TO_GRID, true);
                     LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
-                    mChangedToGrid = false;
+                    mChangedToGrid = true;
                 } else {
                     item.setTitle("Grid");
                     item.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
@@ -132,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent intent = new Intent(ListToGridBroadcastReceiver.INTENT_FILTER_STRING);
                     intent.putExtra(ListToGridBroadcastReceiver.CHANGE_TO_LIST, true);
                     LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(intent);
-                    mChangedToGrid = true;
+                    mChangedToGrid = false;
                 }
                 break;
             case 1:
@@ -148,11 +159,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        final MenuItem listMenuItem = menu.add(0,0,0,"Grid");
-        listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
-                .ic_view_module_black_24dp));
-        listMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
+        final MenuItem listMenuItem;
+
+        if (!mChangedToGrid) {
+            listMenuItem = menu.add(0,0,0,"Grid");
+            listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
+                    .ic_view_module_black_24dp));
+        } else {
+            listMenuItem = menu.add(0,0,0,"List");
+            listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
+                    .ic_view_list_black_24dp));
+        }
+
+        listMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.add(0,1,0,"Credits");
 
         return true;
