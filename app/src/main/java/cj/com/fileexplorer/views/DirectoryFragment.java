@@ -191,6 +191,19 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         LocalBroadcastManager.getInstance(getContext()).registerReceiver
                 (mNavigateBroadcastReceiver, new IntentFilter(NavigateBroadcastReceiver
                         .INTENT_FILTER_STRING));
+
+//        if (getActivity().getIntent().hasExtra(NavigateBroadcastReceiver.NAVIGATE_ACTION)) {
+//            String navigateAction = getActivity().getIntent().getStringExtra(NavigateBroadcastReceiver.NAVIGATE_ACTION);
+//
+//            switch(navigateAction) {
+//                case NavigateBroadcastReceiver.NAVIGATE_TO_EXTERNAL_STORAGE:
+//                    navigateToExternalStorage();
+//                    break;
+//                case NavigateBroadcastReceiver.NAVIGATE_TO_INTERNAL_STORAGE:
+//                    navigateToInternalStorage(getContext());
+//                    break;
+//            }
+//        }
     }
 
     @Override

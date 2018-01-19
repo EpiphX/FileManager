@@ -1,5 +1,6 @@
 package cj.com.fileexplorer;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -48,27 +49,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-
-            Intent[] intents = new Intent[2];
-
-
-            Intent launchActivityIntent = new Intent(MainActivity.this, MainActivity.class);
-            launchActivityIntent.setAction(Intent.ACTION_VIEW);
-
-            launchActivityIntent.putExtra("NAVIGATION_SHORTCUT_KEY", "EXTERNAL_STORAGE");
-
-            ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "id1")
-                    .setShortLabel("External Storage")
-                    .setLongLabel("Open external storage")
-                    .setIcon(Icon.createWithResource(getBaseContext(), R.drawable.ic_folder_black_24dp))
-                    .setIntent(launchActivityIntent)
-                    .build();
-
-            shortcutManager.setDynamicShortcuts(Arrays.asList(shortcut));
-        }
-
+        createShortcuts();
 
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
@@ -124,6 +105,45 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @TargetApi(Build.VERSION_CODES.N_MR1)
+    private void createShortcuts() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+            Intent navigateToExternalStorageIntent = new Intent(MainActivity.this, MainActivity.class);
+            navigateToExternalStorageIntent.setAction(Intent.ACTION_VIEW);
+            navigateToExternalStorageIntent.putExtra(NavigateBroadcastReceiver.NAVIGATE_ACTION, NavigateBroadcastReceiver
+                    .NAVIGATE_TO_EXTERNAL_STORAGE);
+
+            ShortcutInfo externalStorageShortcut = new ShortcutInfo.Builder(this,
+                    "external_storage")
+                    .setShortLabel("External Storage")
+                    .setLongLabel("Open external storage")
+                    .setIcon(Icon.createWithResource(getBaseContext(), R.drawable.ic_folder_black_24dp))
+                    .setIntent(navigateToExternalStorageIntent)
+                    .build();
+
+            Intent navigateToInternalStorageIntent = new Intent(MainActivity.this, MainActivity.class);
+            navigateToInternalStorageIntent.setAction(Intent.ACTION_VIEW);
+            navigateToInternalStorageIntent.putExtra(NavigateBroadcastReceiver.NAVIGATE_ACTION, NavigateBroadcastReceiver.NAVIGATE_TO_INTERNAL_STORAGE);
+
+            ShortcutInfo internalStorageShortcut = new ShortcutInfo.Builder(this,
+                    "internal_storage")
+                    .setShortLabel("Internal Storage")
+                    .setLongLabel("Open internal storage")
+                    .setIcon(Icon.createWithResource(getBaseContext(), R.drawable.ic_insert_drive_file_black_24dp))
+                    .setIntent(navigateToInternalStorageIntent)
+                    .build();
+
+            shortcutManager.setDynamicShortcuts(Arrays.asList(externalStorageShortcut, internalStorageShortcut));
+        }
     }
 
     private void navigateToInternalStorage() {

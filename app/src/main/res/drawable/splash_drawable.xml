@@ -2,5 +2,5 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <!--Look into making a more creative splash screen if there is time.-->
     <item android:drawable="@color/colorPrimaryDark"/>
-    <item android:drawable="@drawable/ic_launcher_foreground" android:gravity="center"/>
+    <item android:gravity="center" android:drawable="@drawable/ic_launcher"/>
 </layer-list>
