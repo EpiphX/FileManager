@@ -31,6 +31,7 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
 
         if (directoryView != null) {
             ArrayList<FileModel> fileModels = mFileManager.getAllFiles();
+            // TODO: Look into showing directories at top.
 //            Collections.sort(fileModels, new Comparator<FileModel>() {
 //                @Override
 //                public int compare(FileModel fileModel, FileModel t1) {

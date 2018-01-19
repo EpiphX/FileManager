@@ -1,7 +1,12 @@
 package cj.com.fileexplorer;
 
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
 import android.content.res.Configuration;
+import android.graphics.drawable.Icon;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.util.Arrays;
 import java.util.List;
 
 import cj.com.fileexplorer.broadcast_receivers.ListToGridBroadcastReceiver;
@@ -41,6 +47,29 @@ public class MainActivity extends AppCompatActivity {
         // external storage shortcuts.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+            Intent[] intents = new Intent[2];
+
+
+            Intent launchActivityIntent = new Intent(MainActivity.this, MainActivity.class);
+            launchActivityIntent.setAction(Intent.ACTION_VIEW);
+
+            launchActivityIntent.putExtra("NAVIGATION_SHORTCUT_KEY", "EXTERNAL_STORAGE");
+
+            ShortcutInfo shortcut = new ShortcutInfo.Builder(this, "id1")
+                    .setShortLabel("External Storage")
+                    .setLongLabel("Open external storage")
+                    .setIcon(Icon.createWithResource(getBaseContext(), R.drawable.ic_folder_black_24dp))
+                    .setIntent(launchActivityIntent)
+                    .build();
+
+            shortcutManager.setDynamicShortcuts(Arrays.asList(shortcut));
+        }
+
+
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
@@ -83,23 +112,11 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.navigation_external_storage:
                         // Post navigation to external storage.
-                        mSelectedNavigationItem = R.id.navigation_external_storage;
-                        Intent navigateToExternalIntent = new Intent(NavigateBroadcastReceiver
-                                .INTENT_FILTER_STRING);
-                        navigateToExternalIntent.putExtra(NavigateBroadcastReceiver
-                                .NAVIGATE_ACTION,
-                                NavigateBroadcastReceiver.NAVIGATE_TO_EXTERNAL_STORAGE);
-                        LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(navigateToExternalIntent);
+                        navigateToExternalStorage();
                         break;
                     case R.id.navigation_internal_storage:
                         // Post navigation to internal storage.
-                        mSelectedNavigationItem = R.id.navigation_internal_storage;
-                        Intent navigateToInternalIntent = new Intent(NavigateBroadcastReceiver
-                                .INTENT_FILTER_STRING);
-                        navigateToInternalIntent.putExtra(NavigateBroadcastReceiver
-                                .NAVIGATE_ACTION, NavigateBroadcastReceiver
-                                .NAVIGATE_TO_INTERNAL_STORAGE);
-                        LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(navigateToInternalIntent);
+                        navigateToInternalStorage();
                         break;
                 }
 
@@ -107,6 +124,25 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+    }
+
+    private void navigateToInternalStorage() {
+        mSelectedNavigationItem = R.id.navigation_internal_storage;
+        Intent navigateToInternalIntent = new Intent(NavigateBroadcastReceiver
+                .INTENT_FILTER_STRING);
+        navigateToInternalIntent.putExtra(NavigateBroadcastReceiver
+                .NAVIGATE_ACTION, NavigateBroadcastReceiver
+                .NAVIGATE_TO_INTERNAL_STORAGE);
+        LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(navigateToInternalIntent);
+    }
+
+    private void navigateToExternalStorage() {
+        mSelectedNavigationItem = R.id.navigation_external_storage;
+        Intent navigateToExternalIntent = new Intent(NavigateBroadcastReceiver
+                .INTENT_FILTER_STRING);
+        navigateToExternalIntent.putExtra(NavigateBroadcastReceiver
+                        .NAVIGATE_ACTION, NavigateBroadcastReceiver.NAVIGATE_TO_EXTERNAL_STORAGE);
+        LocalBroadcastManager.getInstance(getBaseContext()).sendBroadcast(navigateToExternalIntent);
     }
 
     @Override
@@ -174,17 +210,17 @@ public class MainActivity extends AppCompatActivity {
         final MenuItem listMenuItem;
 
         if (!mChangedToGrid) {
-            listMenuItem = menu.add(0,0,0,"Grid");
+            listMenuItem = menu.add(0, 0, 0, "Grid");
             listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                     .ic_view_module_black_24dp));
         } else {
-            listMenuItem = menu.add(0,0,0,"List");
+            listMenuItem = menu.add(0, 0, 0, "List");
             listMenuItem.setIcon(ContextCompat.getDrawable(getBaseContext(), R.drawable
                     .ic_view_list_black_24dp));
         }
 
         listMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        menu.add(0,1,0,"Credits");
+        menu.add(0, 1, 0, "Credits");
 
         return true;
     }
@@ -196,7 +232,7 @@ public class MainActivity extends AppCompatActivity {
         List<Fragment> baseFragments = getSupportFragmentManager().getFragments();
 
         for (Fragment fragment : baseFragments) {
-            if (fragment != null && fragment.isVisible() && fragment instanceof BaseFragment){
+            if (fragment != null && fragment.isVisible() && fragment instanceof BaseFragment) {
                 if (!((BaseFragment) fragment).onBackPressed()) {
                     super.onBackPressed();
                 }

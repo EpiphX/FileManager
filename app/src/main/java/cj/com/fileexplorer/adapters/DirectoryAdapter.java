@@ -1,7 +1,6 @@
 package cj.com.fileexplorer.adapters;
 
 import android.net.Uri;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,18 +8,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.MemoryPolicy;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import cj.com.fileexplorer.R;
 import cj.com.filemanager.models.FileModel;
 
-public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.ViewHolder> {
+public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.DirectoryViewHolder> {
     private final OnItemClickListener mOnItemClickListener;
     private ArrayList<FileModel> mFiles;
+
+    private static final int LIST_VIEW_HOLDER_TYPE = 0;
+    private static final int CARD_VIEW_HOLDER_TYPE = 1;
 
     private boolean mShowGrid;
 
@@ -30,13 +30,23 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.file_grid_layout, parent, false);
-        return new ViewHolder(v);
+    public DirectoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v;
+        switch (viewType) {
+            case CARD_VIEW_HOLDER_TYPE:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.file_grid_layout, parent,
+                        false);
+                return new CardViewHolder(v);
+            case LIST_VIEW_HOLDER_TYPE:
+            default:
+                v = LayoutInflater.from(parent.getContext()).inflate(R.layout.directory_item_layout, parent,
+                        false);
+                return new DirectoryViewHolder(v);
+        }
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(DirectoryViewHolder holder, final int position) {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,35 +62,16 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
             }
         });
 
-        holder.mFileNameTextView.setText(mFiles.get(position).getFile().getName());
-
-        if (mFiles.get(position).getFile().isDirectory()) {
-            holder.mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable
-                    .ic_folder_black_24dp, 0,0,0);
-
-            holder.mFileImageView.setVisibility(View.GONE);
-        } else {
-            holder.mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(mFiles.get
-                            (position).getFileIcon().getDrawableId(),
-                    0,0,
-                    0);
-
-            holder.mFileImageView.setVisibility(View.VISIBLE);
-
-            Uri uri = Uri.fromFile(mFiles.get(position).getFile());
-            Picasso.with(holder.mFileImageView.getContext())
-                    .load(uri)
-                    .placeholder(R.drawable.ic_insert_drive_file_black_24dp)
-                    .fit()
-                    .into(holder.mFileImageView);
-
-
-        }
+        holder.setData(mFiles.get(position));
     }
 
     @Override
     public int getItemViewType(int position) {
-        return super.getItemViewType(position);
+        if (mShowGrid) {
+            return CARD_VIEW_HOLDER_TYPE;
+        } else {
+            return LIST_VIEW_HOLDER_TYPE;
+        }
     }
 
     @Override
@@ -103,16 +94,60 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.View
         notifyDataSetChanged();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView mFileNameTextView;
+    public void setShowGrid(boolean showGrid) {
+        mShowGrid = showGrid;
+    }
 
-        // TODO: Grid like views will need to be moved into their own view holder or adapter.
-        private ImageView mFileImageView;
+    public class DirectoryViewHolder extends RecyclerView.ViewHolder {
+        public TextView mFileNameTextView;
 
-        public ViewHolder(View itemView) {
+        public DirectoryViewHolder(View itemView) {
+            super(itemView);
+            mFileNameTextView = itemView.findViewById(R.id.directoryItemTextView);
+        }
+
+        public void setData(FileModel fileModel) {
+            mFileNameTextView.setText(fileModel.getFile().getName());
+
+            if (fileModel.getFile().isDirectory()) {
+                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable
+                        .ic_folder_black_24dp, 0,0,0);
+            } else {
+                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(fileModel.getFileIcon()
+                                .getDrawableId(), 0,0, 0);
+            }
+        }
+
+    }
+
+    public class CardViewHolder extends DirectoryViewHolder {
+        public ImageView mFileImageView;
+
+        public CardViewHolder(View itemView) {
             super(itemView);
             mFileImageView = itemView.findViewById(R.id.imageView);
-            mFileNameTextView = itemView.findViewById(R.id.directoryItemTextView);
+        }
+
+        @Override
+        public void setData(FileModel fileModel) {
+            mFileNameTextView.setText(fileModel.getFile().getName());
+
+            if (fileModel.getFile().isDirectory()) {
+                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable
+                        .ic_folder_black_24dp, 0,0,0);
+                mFileImageView.setVisibility(View.GONE);
+            } else {
+                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(fileModel.getFileIcon()
+                        .getDrawableId(), 0,0, 0);
+
+                mFileImageView.setVisibility(View.VISIBLE);
+                Uri uri = Uri.fromFile(fileModel.getFile());
+                Picasso.with(mFileImageView.getContext())
+                        .load(uri)
+                        .placeholder(R.drawable.ic_insert_drive_file_black_24dp)
+                        .fit()
+                        .into(mFileImageView);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package cj.com.fileexplorer.views;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -14,17 +15,20 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.Date;
 import java.util.ArrayList;
 
 import cj.com.fileexplorer.BuildConfig;
@@ -56,6 +60,8 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     private DirectoryPresenter mDirectoryPresenter;
     private Toolbar mainToolbar;
     private TextView mainToolbarTitleTextView;
+
+    private DividerItemDecoration mDividerItemDecoration;
 
     private boolean mShowGrid = false;
 
@@ -99,17 +105,22 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void changeListToGrid() {
+        mShowGrid = true;
+        mDirectoryAdapter.setShowGrid(mShowGrid);
+        mDirectoryRecyclerView.removeItemDecoration(mDividerItemDecoration);
         mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
         mDirectoryAdapter.notifyDataSetChanged();
-        mShowGrid = true;
+
     }
 
     @Override
     public void changeGridToList() {
+        mShowGrid = false;
+        mDirectoryAdapter.setShowGrid(mShowGrid);
+        mDirectoryRecyclerView.addItemDecoration(mDividerItemDecoration, 0);
         mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false));
         mDirectoryAdapter.notifyDataSetChanged();
-        mShowGrid = false;
     }
 
     public static DirectoryFragment getInstance(Bundle arguments) {
@@ -122,6 +133,8 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDirectoryPresenter = new DirectoryPresenter(this);
+        mDividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration
+                .VERTICAL);
 
         if (savedInstanceState != null) {
             mShowGrid = savedInstanceState.getBoolean(SHOW_GRID_LAYOUT_KEY,
@@ -149,8 +162,10 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mDirectoryRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         if (mShowGrid) {
+            mDirectoryRecyclerView.removeItemDecoration(mDividerItemDecoration);
             mDirectoryRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(NUMBER_OF_COLUMNS_IN_GRID, StaggeredGridLayoutManager.VERTICAL));
         } else {
+            mDirectoryRecyclerView.addItemDecoration(mDividerItemDecoration, 0);
             mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                     LinearLayoutManager.VERTICAL, false));
         }
@@ -262,7 +277,18 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void showExtendedInformationOnFile(FileModel fileModel) {
+        String fileSize = Formatter.formatFileSize(getContext(), fileModel.getFile().length());
+
+
         // TODO: Look into popping up a dialog with extended information on the selected file.
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                .setTitle("File Name: " + fileModel.getFile().getName())
+                .setMessage("File size:" + fileSize +
+                        "\n" + "Creation Date:" + new Date(fileModel.getFile()
+                        .lastModified()).toString())
+                .create();
+
+        alertDialog.show();
     }
 
     @Override
