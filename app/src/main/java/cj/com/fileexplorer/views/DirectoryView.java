@@ -12,15 +12,13 @@ import cj.com.filemanager.models.FileModel;
 
 public interface DirectoryView {
     void changeGridToList();
-
     void changeListToGrid();
-
     void setDirectoryTitle(String title);
     void showFiles(ArrayList<FileModel> fileModels);
-    void clearFiles();
     void navigateToInternalStorage(Context context);
     void navigateToExternalStorage();
     void viewFile(FileModel fileModel);
-
     void showExtendedInformationOnFile(FileModel fileModel);
+
+    void directoryHasUpdated();
 }

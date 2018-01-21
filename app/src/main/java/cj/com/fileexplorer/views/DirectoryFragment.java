@@ -108,7 +108,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mShowGrid = true;
         mDirectoryAdapter.setShowGrid(mShowGrid);
         mDirectoryRecyclerView.removeItemDecoration(mDividerItemDecoration);
-        mDirectoryRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), NUMBER_OF_COLUMNS_IN_GRID));
+        mDirectoryRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(NUMBER_OF_COLUMNS_IN_GRID, StaggeredGridLayoutManager.VERTICAL));
         mDirectoryAdapter.notifyDataSetChanged();
 
     }
@@ -257,11 +257,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     }
 
     @Override
-    public void clearFiles() {
-
-    }
-
-    @Override
     public void navigateToInternalStorage(Context context) {
         mDirectoryPresenter.onNavigateToInternalStorage(getContext());
     }
@@ -293,15 +288,26 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         String fileSize = Formatter.formatFileSize(getContext(), fileModel.getFile().length());
 
 
-        // TODO: Look into popping up a dialog with extended information on the selected file.
-        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
-                .setTitle("File Name: " + fileModel.getFile().getName())
-                .setMessage("File size:" + fileSize +
-                        "\n" + "Creation Date:" + new Date(fileModel.getFile()
-                        .lastModified()).toString())
-                .create();
+        if (fileModel.getFile().isDirectory()) {
 
-        alertDialog.show();
+        } else {
+            View view = LayoutInflater.from(getContext()).inflate(R.layout
+                    .file_properties_layout, null);
+
+            TextView fileNameTextView = view.findViewById(R.id.fileNameTextView);
+            fileNameTextView.setText(fileModel.getFile().getName());
+
+            TextView fileSizeTextView = view.findViewById(R.id.fileSizeTextView);
+            fileSizeTextView.setText(fileSize);
+
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle("Information")
+                    .setView(view)
+                    .setPositiveButton("OK", null)
+                    .create();
+
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -312,5 +318,19 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     @Override
     public void onLongPress(FileModel fileModel) {
         mDirectoryPresenter.onLongFileModelPress(fileModel);
+    }
+
+    @Override
+    public void directoryHasUpdated() {
+        View mainView = getView();
+
+        if (mainView != null) {
+            mainView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mDirectoryPresenter.onFilesRequest();
+                }
+            });
+        }
     }
 }

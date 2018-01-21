@@ -116,9 +116,12 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
 
     @Override
     public void directoryHasUpdated() {
-        onFilesRequest();
+        DirectoryView directoryView = mDirectoryViewWeakReference.get();
+
+        if (directoryView == null) {
+            return;
+        }
+
+        directoryView.directoryHasUpdated();
     }
-
-
-
 }

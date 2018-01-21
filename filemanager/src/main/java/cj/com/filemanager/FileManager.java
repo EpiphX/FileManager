@@ -14,6 +14,12 @@ import java.util.Stack;
 
 import cj.com.filemanager.models.FileModel;
 
+import static android.os.FileObserver.DELETE;
+import static android.os.FileObserver.DELETE_SELF;
+import static android.os.FileObserver.MOVED_FROM;
+import static android.os.FileObserver.MOVED_TO;
+import static android.os.FileObserver.MOVE_SELF;
+
 // TODO: This is more like a directory navigator. Separate the file oriented stuff into its own
 // class.
 
@@ -106,8 +112,11 @@ public class FileManager {
         if (mFileObserver != null) {
             mFileObserver.stopWatching();
         }
-        mFileObserver = new FileObserver(mCurrentDirectoryPath, FileObserver.CREATE |
-                FileObserver.MODIFY | FileObserver.MOVED_FROM | FileObserver.MOVED_TO) {
+
+        final int MASK = FileObserver.CREATE | MOVED_TO | DELETE | MOVED_FROM | DELETE_SELF |
+                MOVE_SELF;
+//
+        mFileObserver = new FileObserver(mCurrentDirectoryPath, MASK) {
             @Override
             public void onEvent(int event, @Nullable String path) {
                 if (mListener != null) {
@@ -115,9 +124,9 @@ public class FileManager {
                 }
             }
         };
-
-        // TODO: Need to fix file observer. It is impacting the performance of the recycler view.
-//        mFileObserver.startWatching();
+//
+//        // TODO: Need to fix file observer. It is impacting the performance of the recycler view.
+        mFileObserver.startWatching();
     }
 
     public boolean navigateToPreviousDirectory() {
