@@ -164,6 +164,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mNumberOfFilesTextView = mainToolbar.findViewById(R.id.numberOfFilesTextView);
 
         mDirectoryAdapter = new DirectoryAdapter(this);
+        mDirectoryAdapter.setShowGrid(mShowGrid);
         mDirectoryRecyclerView = view.findViewById(R.id.fileRecyclerView);
         mDirectoryRecyclerView.setAdapter(mDirectoryAdapter);
         mDirectoryRecyclerView.setHasFixedSize(true);
