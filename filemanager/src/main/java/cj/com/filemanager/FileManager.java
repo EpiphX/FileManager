@@ -10,8 +10,11 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Stack;
 
+import cj.com.filemanager.comparators.FileDirectoryComparator;
 import cj.com.filemanager.models.FileModel;
 
 import static android.os.FileObserver.DELETE;
@@ -61,11 +64,12 @@ public class FileManager {
     }
 
     /**
-     * Gets all files for the given directory.
+     * Gets all files for the current directory.
      *
-     * @return      All the files for the given directory path.
+     * @param fileComparator
+     * @return
      */
-    public ArrayList<FileModel> getAllFiles() {
+    public ArrayList<FileModel> getAllFilesForCurrentDirectory(@Nullable Comparator<File> fileComparator) {
         ArrayList<FileModel> fileModels = new ArrayList<>();
 
         if (TextUtils.isEmpty(mCurrentDirectoryPath)) {
@@ -75,6 +79,12 @@ public class FileManager {
         Log.d(TAG, "Path: " + mCurrentDirectoryPath);
         File f = new File(mCurrentDirectoryPath);
         File file[] = f.listFiles();
+
+        // It will return a list of all the files for the given directory
+        if (fileComparator != null) {
+            Arrays.sort(file, fileComparator);
+        }
+
         if (file != null) {
             Log.d(TAG, "Size: " + file.length);
             for (int i = 0; i < file.length; i++) {
@@ -189,8 +199,5 @@ public class FileManager {
         return context.getFilesDir().getAbsolutePath();
     }
 
-    // Add ability to interface with external storage.
     // Add ability to get file type.
-    // Add ability to get file thumbnail.
-    // Add ability for file structure to receive updates when an update has changed.
 }

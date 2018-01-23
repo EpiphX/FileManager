@@ -24,13 +24,38 @@
         android:id="@+id/fileNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
         android:text="Text.png"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/fileNameTitleTextView"
         app:layout_constraintTop_toBottomOf="@id/fileNameTitleTextView"/>
+
+    <TextView
+        android:id="@+id/fileLocationTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:text="File Location"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/fileNameTextView"
+        app:layout_constraintTop_toBottomOf="@id/fileNameTextView"/>
+
+    <TextView
+        android:id="@+id/fileLocationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Blah/blah"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/fileLocationTitleTextView"
+        app:layout_constraintTop_toBottomOf="@id/fileLocationTitleTextView"/>
 
     <TextView
         android:id="@+id/fileSizeTitleTextView"
@@ -43,37 +68,34 @@
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fileNameTextView"/>
+        app:layout_constraintTop_toBottomOf="@id/fileLocationTextView"/>
 
     <TextView
         android:id="@+id/fileSizeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
         android:text="4 kB"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0"
+        app:layout_goneMarginBottom="32dp"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fileSizeTitleTextView"
-        />
+        app:layout_constraintStart_toStartOf="@+id/fileSizeTitleTextView"
+        app:layout_constraintBottom_toTopOf="@+id/directoryFragmentProperty"
+        app:layout_constraintTop_toBottomOf="@id/fileSizeTitleTextView"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/directoryFragmentProperty"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="wrap_content"
         android:layout_margin="24dp"
-        android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fileSizeTextView"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fileSizeTextView"
         />
 
 </android.support.constraint.ConstraintLayout>
