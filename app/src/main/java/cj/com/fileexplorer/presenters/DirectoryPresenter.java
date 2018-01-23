@@ -48,6 +48,8 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
 //            });
             directoryView.showFiles(fileModels);
             directoryView.setDirectoryTitle(mFileManager.getCurrentDirectoryPath());
+            directoryView.showNumberOfDirectories(mFileManager.getNumberOfDirectoriesInCurrentDirectory());
+            directoryView.showNumberOfFiles(mFileManager.getNumberOfFilesInCurrentDirectory());
         }
     }
 

@@ -3,4 +3,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="file_card_grid_size">224dp</dimen>
+    <dimen name="standard_padding">16dp</dimen>
 </resources>

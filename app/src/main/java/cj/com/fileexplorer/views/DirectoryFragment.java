@@ -16,7 +16,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -25,10 +24,10 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.Date;
 import java.util.ArrayList;
 
 import cj.com.fileexplorer.BuildConfig;
@@ -58,10 +57,15 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     private DirectoryAdapter mDirectoryAdapter;
 
     private DirectoryPresenter mDirectoryPresenter;
+
+    private HorizontalScrollView mMainDirectoryScrollView;
     private Toolbar mainToolbar;
     private TextView mainToolbarTitleTextView;
 
     private DividerItemDecoration mDividerItemDecoration;
+
+    private TextView mNumberOfDirectoriesTextView;
+    private TextView mNumberOfFilesTextView;
 
     private boolean mShowGrid = false;
 
@@ -151,9 +155,13 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mMainDirectoryScrollView = view.findViewById(R.id.mainDirectoryScrollView);
         mainToolbar = view.findViewById(R.id.mainToolbar);
         mainToolbarTitleTextView = mainToolbar.findViewById(R.id.mainToolbarTextView);
         mainToolbarTitleTextView.setTextColor(Color.WHITE);
+
+        mNumberOfDirectoriesTextView = mainToolbar.findViewById(R.id.numberOfDirectoriesTextView);
+        mNumberOfFilesTextView = mainToolbar.findViewById(R.id.numberOfFilesTextView);
 
         mDirectoryAdapter = new DirectoryAdapter(this);
         mDirectoryRecyclerView = view.findViewById(R.id.fileRecyclerView);
@@ -248,6 +256,35 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     public void setDirectoryTitle(String title) {
         if (mainToolbarTitleTextView != null) {
             mainToolbarTitleTextView.setText(title);
+            mainToolbarTitleTextView.post(new Runnable() {
+                @Override
+                public void run() {
+                    mMainDirectoryScrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT);
+                }
+            });
+        }
+    }
+
+    @Override
+    public void showNumberOfDirectories(int numberOfDirectories) {
+        if (numberOfDirectories == 0) {
+            mNumberOfDirectoriesTextView.setVisibility(View.GONE);
+        } else {
+            String numOfDirectoriesString = getString(R.string.folders) + ": " + String.valueOf
+                    (numberOfDirectories);
+            mNumberOfDirectoriesTextView.setText(numOfDirectoriesString);
+            mNumberOfDirectoriesTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void showNumberOfFiles(int numberOfFiles) {
+        if (numberOfFiles == 0) {
+            mNumberOfFilesTextView.setVisibility(View.GONE);
+        } else {
+            String numOfFilesString = getString(R.string.files) + ": " + String.valueOf(numberOfFiles);
+            mNumberOfFilesTextView.setText(numOfFilesString);
+            mNumberOfFilesTextView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -301,9 +338,9 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
             fileSizeTextView.setText(fileSize);
 
             AlertDialog alertDialog = new AlertDialog.Builder(getContext())
-                    .setTitle("Information")
+                    .setTitle(R.string.information)
                     .setView(view)
-                    .setPositiveButton("OK", null)
+                    .setPositiveButton(R.string.ok, null)
                     .create();
 
             alertDialog.show();

@@ -6,4 +6,8 @@
     <string name="internal_storage">Internal Storage</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="information">Information</string>
+    <string name="ok">OK</string>
+    <string name="folders">Folders</string>
+    <string name="files">Files</string>
 </resources>

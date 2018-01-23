@@ -14,11 +14,12 @@ public interface DirectoryView {
     void changeGridToList();
     void changeListToGrid();
     void setDirectoryTitle(String title);
+    void showNumberOfDirectories(int numberOfDirectories);
+    void showNumberOfFiles(int numberOfFiles);
     void showFiles(ArrayList<FileModel> fileModels);
     void navigateToInternalStorage(Context context);
     void navigateToExternalStorage();
     void viewFile(FileModel fileModel);
     void showExtendedInformationOnFile(FileModel fileModel);
-
     void directoryHasUpdated();
 }

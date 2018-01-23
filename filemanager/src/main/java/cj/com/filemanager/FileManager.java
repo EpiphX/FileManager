@@ -95,6 +95,48 @@ public class FileManager {
         return fileModels;
     }
 
+    public int getNumberOfFilesInCurrentDirectory() {
+        if (TextUtils.isEmpty(mCurrentDirectoryPath)) {
+            return 0;
+        }
+
+        int fileCount = 0;
+
+        File f = new File(mCurrentDirectoryPath);
+        File file[] = f.listFiles();
+
+        if (file != null) {
+            for (int i = 0; i < file.length; i++) {
+                if (file[i].isFile()) {
+                    fileCount++;
+                }
+            }
+        }
+
+        return fileCount;
+    }
+
+    public int getNumberOfDirectoriesInCurrentDirectory() {
+        if (TextUtils.isEmpty(mCurrentDirectoryPath)) {
+            return 0;
+        }
+
+        int directoryCount = 0;
+
+        File f = new File(mCurrentDirectoryPath);
+        File file[] = f.listFiles();
+
+        if (file != null) {
+            for (int i = 0; i < file.length; i++) {
+                if (file[i].isDirectory()) {
+                    directoryCount++;
+                }
+            }
+        }
+
+        return directoryCount;
+    }
+
     public String getCurrentDirectoryPath() {
         return mCurrentDirectoryPath;
     }
@@ -146,8 +188,6 @@ public class FileManager {
     public String getInternalStorageDirectory(Context context) {
         return context.getFilesDir().getAbsolutePath();
     }
-
-
 
     // Add ability to interface with external storage.
     // Add ability to get file type.
