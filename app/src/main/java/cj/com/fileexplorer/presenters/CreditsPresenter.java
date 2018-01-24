@@ -59,7 +59,7 @@ public class CreditsPresenter {
 
             //TODO: Add more icon models for all used icons from Flat icon...
 
-            creditsView.showCreditsForIcons(creditModels);
+            creditsView.showCredits(creditModels);
         }
     }
 }

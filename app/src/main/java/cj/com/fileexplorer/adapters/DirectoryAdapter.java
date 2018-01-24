@@ -115,13 +115,10 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
         public void setData(FileModel fileModel) {
             mFileNameTextView.setText(fileModel.getFile().getName());
 
-
-
             if (fileModel.getFile().isDirectory()) {
                 mDirectoryItemThumbnailImageView.setImageDrawable
                         (mDirectoryItemThumbnailImageView.getContext().getDrawable(R.drawable
                                 .ic_folder_white_24dp));
-
                 mFileSizeTextView.setVisibility(View.GONE);
             } else {
                 mDirectoryItemThumbnailImageView.setImageDrawable
@@ -135,7 +132,6 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
                 mFileSizeTextView.setVisibility(View.VISIBLE);
             }
         }
-
     }
 
     public class CardViewHolder extends DirectoryViewHolder {

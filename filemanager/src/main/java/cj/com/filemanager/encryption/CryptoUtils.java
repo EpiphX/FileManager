@@ -16,9 +16,9 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Created by EpiphX on 1/22/18.
+ * Work on this if time remains. Need to look into hashing the inputted key by the user, so that
+ * we can make it 256 bits in order to use it as an AES key.
  */
-
 public class CryptoUtils {
     private static final String ALGORITHM = "AES";
     private static final String TRANSFORMATION = "AES";

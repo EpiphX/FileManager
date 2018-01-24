@@ -41,7 +41,7 @@ public class CreditsActivity extends AppCompatActivity implements CreditsView {
     }
 
     @Override
-    public void showCreditsForIcons(ArrayList<CreditModel> creditModels) {
+    public void showCredits(ArrayList<CreditModel> creditModels) {
         mCreditsAdapter.showIcons(creditModels);
     }
 }
