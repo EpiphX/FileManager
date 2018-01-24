@@ -54,6 +54,13 @@ public class FileManager {
         mDirectoryHistory = (Stack<String>) inState.getSerializable(DIRECTORY_HISTORY_KEY);
     }
 
+    public void close() {
+        // Close any listeners.
+        if (mFileObserver != null) {
+            mFileObserver.stopWatching();
+        }
+    }
+
     public interface FileManagerListener {
         void directoryHasUpdated();
     }
@@ -167,7 +174,7 @@ public class FileManager {
 
         final int MASK = FileObserver.CREATE | MOVED_TO | DELETE | MOVED_FROM | DELETE_SELF |
                 MOVE_SELF;
-//
+
         mFileObserver = new FileObserver(mCurrentDirectoryPath, MASK) {
             @Override
             public void onEvent(int event, @Nullable String path) {
@@ -176,8 +183,6 @@ public class FileManager {
                 }
             }
         };
-//
-//        // TODO: Need to fix file observer. It is impacting the performance of the recycler view.
         mFileObserver.startWatching();
     }
 

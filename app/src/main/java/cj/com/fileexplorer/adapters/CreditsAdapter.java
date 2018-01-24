@@ -9,19 +9,18 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import cj.com.fileexplorer.R;
-import cj.com.fileexplorer.models.IconModel;
+import cj.com.fileexplorer.models.CreditModel;
 
 /**
  * To show license and credits for third party libraries and resources.
  */
 public class CreditsAdapter extends RecyclerView.Adapter<CreditsAdapter.ViewHolder> {
 
-    private ArrayList<IconModel> mIconModels;
+    private ArrayList<CreditModel> mCreditModels;
 
     public CreditsAdapter() {
-        mIconModels = new ArrayList<>();
+        mCreditModels = new ArrayList<>();
     }
-
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -32,18 +31,18 @@ public class CreditsAdapter extends RecyclerView.Adapter<CreditsAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.mTextView.setCompoundDrawablesWithIntrinsicBounds(holder.mTextView.getContext()
-                .getDrawable(mIconModels.get(position).getDrawableResourceId()), null, null, null);
+                .getDrawable(mCreditModels.get(position).getDrawableResourceId()), null, null, null);
         holder.mTextView.setCompoundDrawablePadding(holder.mTextView.getResources()
                 .getDimensionPixelSize(R.dimen.activity_horizontal_margin));
     }
 
     @Override
     public int getItemCount() {
-        return mIconModels.size();
+        return mCreditModels.size();
     }
 
-    public void showIcons(ArrayList<IconModel> iconModels) {
-        mIconModels = iconModels;
+    public void showIcons(ArrayList<CreditModel> iconModels) {
+        mCreditModels = iconModels;
         notifyDataSetChanged();
     }
 

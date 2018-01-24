@@ -12,9 +12,9 @@ import cj.com.filemanager.comparators.FileDirectoryComparator;
 import cj.com.filemanager.models.FileModel;
 
 /**
- * Created by EpiphX on 1/14/18.
+ * Manages the business logic of interaction with the {@link DirectoryView}. It communicates with
+ * the {@link FileManager} in order to navigate the directory tree as specified.
  */
-
 public class DirectoryPresenter implements FileManager.FileManagerListener {
     private WeakReference<DirectoryView> mDirectoryViewWeakReference;
     private FileManager mFileManager;
@@ -80,6 +80,10 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
         }
 
         directoryView.showExtendedInformationOnFile(fileModel);
+    }
+
+    public void onDestroy() {
+        mFileManager.close();
     }
 
     public boolean onBackPressed() {

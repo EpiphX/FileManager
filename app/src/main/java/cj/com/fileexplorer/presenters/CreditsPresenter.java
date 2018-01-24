@@ -4,7 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import cj.com.filemanager.R;
-import cj.com.fileexplorer.models.IconModel;
+import cj.com.fileexplorer.models.CreditModel;
 import cj.com.fileexplorer.views.CreditsView;
 
 /**
@@ -21,17 +21,17 @@ public class CreditsPresenter {
         CreditsView creditsView = mCreditsViewWeakReference.get();
 
         if (creditsView != null) {
-            ArrayList<IconModel> iconModels = new ArrayList<>();
+            ArrayList<CreditModel> creditModels = new ArrayList<>();
 
-            IconModel iconModel = new IconModel("pdf", R.drawable.ic_pdf);
-            iconModels.add(iconModel);
+            CreditModel creditModel = new CreditModel("pdf", R.drawable.ic_pdf);
+            creditModels.add(creditModel);
 
-            iconModel = new IconModel("svg", R.drawable.ic_svg);
-            iconModels.add(iconModel);
+            creditModel = new CreditModel("svg", R.drawable.ic_svg);
+            creditModels.add(creditModel);
 
             //TODO: Add more icon models for all used icons from Flat icon...
 
-            creditsView.showCreditsForIcons(iconModels);
+            creditsView.showCreditsForIcons(creditModels);
         }
     }
 }

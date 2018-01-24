@@ -1,10 +1,10 @@
 package cj.com.fileexplorer.models;
 
-public class IconModel {
+public class CreditModel {
     private String mName;
     private int mDrawableResourceId;
 
-    public IconModel(String name, int drawableResourceId) {
+    public CreditModel(String name, int drawableResourceId) {
         mName = name;
         mDrawableResourceId = drawableResourceId;
     }

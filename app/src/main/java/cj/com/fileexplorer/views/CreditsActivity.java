@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import cj.com.fileexplorer.R;
 import cj.com.fileexplorer.adapters.CreditsAdapter;
-import cj.com.fileexplorer.models.IconModel;
+import cj.com.fileexplorer.models.CreditModel;
 import cj.com.fileexplorer.presenters.CreditsPresenter;
 
 public class CreditsActivity extends AppCompatActivity implements CreditsView {
@@ -41,7 +41,7 @@ public class CreditsActivity extends AppCompatActivity implements CreditsView {
     }
 
     @Override
-    public void showCreditsForIcons(ArrayList<IconModel> iconModels) {
-        mCreditsAdapter.showIcons(iconModels);
+    public void showCreditsForIcons(ArrayList<CreditModel> creditModels) {
+        mCreditsAdapter.showIcons(creditModels);
     }
 }

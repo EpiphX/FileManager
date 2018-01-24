@@ -223,6 +223,12 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     }
 
     @Override
+    public void onDestroy() {
+        mDirectoryPresenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putBoolean(SHOW_GRID_LAYOUT_KEY, mShowGrid);
         mDirectoryPresenter.onSaveInstanceState(outState);
