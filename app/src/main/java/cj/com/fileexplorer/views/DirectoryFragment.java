@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import java.util.ArrayList;
 
@@ -53,6 +54,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     private static final int NUMBER_OF_COLUMNS_IN_GRID = 2;
 
+    private ViewSwitcher mDirectoryRecyclerViewSwitcher;
     private RecyclerView mDirectoryRecyclerView;
     private DirectoryAdapter mDirectoryAdapter;
 
@@ -165,6 +167,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
         mDirectoryAdapter = new DirectoryAdapter(this);
         mDirectoryAdapter.setShowGrid(mShowGrid);
+        mDirectoryRecyclerViewSwitcher = view.findViewById(R.id.fileRecyclerViewSwitcher);
         mDirectoryRecyclerView = view.findViewById(R.id.fileRecyclerView);
         mDirectoryRecyclerView.setAdapter(mDirectoryAdapter);
         mDirectoryRecyclerView.setHasFixedSize(true);
@@ -297,7 +300,15 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void showFiles(ArrayList<FileModel> fileModels) {
-        mDirectoryAdapter.setFiles(fileModels);
+        if (fileModels.size() > 0) {
+            mDirectoryAdapter.setFiles(fileModels);
+
+            if (R.id.fileRecyclerView == mDirectoryRecyclerViewSwitcher.getNextView().getId()) {
+                mDirectoryRecyclerViewSwitcher.showNext();
+            }
+        } else if (R.id.empty_text == mDirectoryRecyclerViewSwitcher.getNextView().getId()) {
+            mDirectoryRecyclerViewSwitcher.showNext();
+        }
     }
 
     @Override

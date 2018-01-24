@@ -77,16 +77,36 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/fileRecyclerView"
+    <ViewSwitcher
+        android:id="@+id/fileRecyclerViewSwitcher"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layoutAnimation="@anim/layout_animation_fall_down"
-        android:scrollbars="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mainToolbar"/>
+        app:layout_constraintTop_toBottomOf="@+id/mainToolbar">
+
+        <TextView
+            android:id="@+id/empty_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal"
+            android:drawableTop="@drawable/ic_insert_drive_file_black_24dp"
+            android:drawableTint="@color/white"
+            android:text="No Files Found"
+            android:textColor="@android:color/white"
+            style="@android:style/TextAppearance.Material.Headline"/>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/fileRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layoutAnimation="@anim/layout_animation_fall_down"
+            android:scrollbars="vertical"/>
+    </ViewSwitcher>
+
+
 
 </android.support.constraint.ConstraintLayout>
