@@ -107,6 +107,15 @@
             android:scrollbars="vertical"/>
     </ViewSwitcher>
 
-
-
+    <Button
+        android:id="@+id/storagePermissionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/use_storage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainToolbar"
+        android:visibility="gone"
+        />
 </android.support.constraint.ConstraintLayout>

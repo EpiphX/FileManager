@@ -24,6 +24,7 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +68,8 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     private TextView mNumberOfDirectoriesTextView;
     private TextView mNumberOfFilesTextView;
+
+    private Button mStoragePermissionButton;
 
     private boolean mShowGrid = false;
 
@@ -157,6 +160,14 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mainToolbarTitleTextView = mainToolbar.findViewById(R.id.mainToolbarTextView);
         mainToolbarTitleTextView.setTextColor(Color.WHITE);
 
+        mStoragePermissionButton = view.findViewById(R.id.storagePermissionButton);
+        mStoragePermissionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestFilePermissions();
+            }
+        });
+
         mNumberOfDirectoriesTextView = mainToolbar.findViewById(R.id.numberOfDirectoriesTextView);
         mNumberOfFilesTextView = mainToolbar.findViewById(R.id.numberOfFilesTextView);
 
@@ -233,6 +244,13 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mDirectoryPresenter.onFilesRequest();
+                    mStoragePermissionButton.setVisibility(View.GONE);
+                    mDirectoryRecyclerViewSwitcher.setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(getContext(), "App requires storage permission to function " +
+                            "correctly", Toast.LENGTH_SHORT).show();
+                    mStoragePermissionButton.setVisibility(View.VISIBLE);
+                    mDirectoryRecyclerViewSwitcher.setVisibility(View.GONE);
                 }
         }
     }
