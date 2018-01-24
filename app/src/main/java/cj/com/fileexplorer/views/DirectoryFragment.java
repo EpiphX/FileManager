@@ -37,6 +37,7 @@ import cj.com.fileexplorer.adapters.DirectoryAdapter;
 import cj.com.fileexplorer.broadcast_receivers.ListToGridBroadcastReceiver;
 import cj.com.fileexplorer.broadcast_receivers.NavigateBroadcastReceiver;
 import cj.com.fileexplorer.presenters.DirectoryPresenter;
+import cj.com.filemanager.FileManager;
 import cj.com.filemanager.models.FileModel;
 
 import static cj.com.filemanager.FileUtils.getMimeType;
@@ -134,7 +135,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDirectoryPresenter = new DirectoryPresenter(this);
+        mDirectoryPresenter = new DirectoryPresenter(this, new FileManager(getContext()));
 
         if (savedInstanceState != null) {
             mShowGrid = savedInstanceState.getBoolean(SHOW_GRID_LAYOUT_KEY,
@@ -292,7 +293,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void navigateToInternalStorage(Context context) {
-        mDirectoryPresenter.onNavigateToInternalStorage(getContext());
+        mDirectoryPresenter.onNavigateToInternalStorage();
     }
 
     @Override

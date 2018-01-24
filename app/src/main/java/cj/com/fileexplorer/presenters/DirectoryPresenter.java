@@ -19,9 +19,10 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
     private WeakReference<DirectoryView> mDirectoryViewWeakReference;
     private FileManager mFileManager;
 
-    public DirectoryPresenter(DirectoryView directoryView) {
+    public DirectoryPresenter(DirectoryView directoryView, FileManager fileManager) {
         mDirectoryViewWeakReference = new WeakReference<DirectoryView>(directoryView);
-        mFileManager = new FileManager(this);
+        mFileManager = fileManager;
+        mFileManager.setListener(this);
     }
 
     public void onFilesRequest() {
@@ -44,8 +45,8 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
             return;
         }
 
-        if (fileModel.getFile().isDirectory()) {
-            mFileManager.navigateToDirectory(fileModel.getFile().getAbsolutePath());
+        if (fileModel.isDirectory()) {
+            mFileManager.navigateToDirectory(fileModel.getAbsolutePath());
             onFilesRequest();
         } else {
             directoryView.viewFile(fileModel);
@@ -62,13 +63,13 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
         onFilesRequest();
     }
 
-    public void onNavigateToInternalStorage(Context context) {
+    public void onNavigateToInternalStorage() {
         if (mFileManager.getCurrentDirectoryPath().equals(mFileManager
-                .getInternalStorageDirectory(context))) {
+                .getInternalStorageDirectory())) {
             return;
         }
 
-        mFileManager.navigateToDirectory(mFileManager.getInternalStorageDirectory(context));
+        mFileManager.navigateToDirectory(mFileManager.getInternalStorageDirectory());
         onFilesRequest();
     }
 

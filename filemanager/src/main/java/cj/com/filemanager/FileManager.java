@@ -9,12 +9,12 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Stack;
 
-import cj.com.filemanager.comparators.FileDirectoryComparator;
 import cj.com.filemanager.models.FileModel;
 
 import static android.os.FileObserver.DELETE;
@@ -23,22 +23,33 @@ import static android.os.FileObserver.MOVED_FROM;
 import static android.os.FileObserver.MOVED_TO;
 import static android.os.FileObserver.MOVE_SELF;
 
-// TODO: This is more like a directory navigator. Separate the file oriented stuff into its own
-// class.
-
 public class FileManager {
     private static final String TAG = "Files";
+
+    /**
+     * Key to save off the current directory into on saved instance state.
+     */
     private static final String CURRENT_DIRECTORY_KEY = "CURRENT_DIRECTORY";
+
+    /**
+     * Key to save off the directory history into on saved instance state.
+     */
     private static final String DIRECTORY_HISTORY_KEY = "DIRECTORY_HISTORY";
 
+    // Serves to receive notifications of updates made to the current viewed directory.
     private FileObserver mFileObserver;
 
     // Stack to keep track of directory navigation. Every time the file manager is informed to
     // navigate to a new directory, this stack should be updated before committing the move.
-
     private Stack<String> mDirectoryHistory;
+
+    // Keeps track of the current working directory absolute path.
     private String mCurrentDirectoryPath;
+
+    // Listener to changes to the file manager's directory stack.
     private FileManagerListener mListener;
+
+    private WeakReference<Context> mContextWeakReference;
 
     // Called when either a configuration or low memory change has occurred. Will save off the
     // current directory and the navigation history.
@@ -65,8 +76,19 @@ public class FileManager {
         void directoryHasUpdated();
     }
 
-    public FileManager(FileManagerListener listener) {
+    public FileManager(Context context) {
         mDirectoryHistory = new Stack<>();
+        mContextWeakReference = new WeakReference<Context>(context);
+    }
+
+    public FileManager(Context context, FileManagerListener listener) {
+        mDirectoryHistory = new Stack<>();
+        mListener = listener;
+
+        mContextWeakReference = new WeakReference<Context>(context);
+    }
+
+    public void setListener(FileManagerListener listener) {
         mListener = listener;
     }
 
@@ -200,7 +222,13 @@ public class FileManager {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
-    public String getInternalStorageDirectory(Context context) {
-        return context.getFilesDir().getAbsolutePath();
+    public String getInternalStorageDirectory() {
+        Context context = mContextWeakReference.get();
+
+        if (context != null) {
+            return context.getFilesDir().getAbsolutePath();
+        } else {
+            return "";
+        }
     }
 }

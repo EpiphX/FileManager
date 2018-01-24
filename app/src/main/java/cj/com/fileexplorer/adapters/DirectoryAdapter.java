@@ -115,7 +115,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
         public void setData(FileModel fileModel) {
             mFileNameTextView.setText(fileModel.getFile().getName());
 
-            if (fileModel.getFile().isDirectory()) {
+            if (fileModel.isDirectory()) {
                 mDirectoryItemThumbnailImageView.setImageDrawable
                         (mDirectoryItemThumbnailImageView.getContext().getDrawable(R.drawable
                                 .ic_folder_white_24dp));
@@ -146,7 +146,7 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
         public void setData(FileModel fileModel) {
             mFileNameTextView.setText(fileModel.getFile().getName());
 
-            if (fileModel.getFile().isDirectory()) {
+            if (fileModel.isDirectory()) {
                 mDirectoryItemThumbnailImageView.setImageDrawable
                         (mDirectoryItemThumbnailImageView.getContext().getDrawable(R.drawable
                                 .ic_folder_white_24dp));

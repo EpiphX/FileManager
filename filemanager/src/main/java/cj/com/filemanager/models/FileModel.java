@@ -1,5 +1,7 @@
 package cj.com.filemanager.models;
 
+import android.support.annotation.NonNull;
+
 import java.io.File;
 
 import cj.com.filemanager.FileIcon;
@@ -14,7 +16,7 @@ public class FileModel {
     private File mFile;
     private FileIcon mFileIcon;
 
-    public FileModel(File file, FileIcon fileIcon) {
+    public FileModel(@NonNull File file, @NonNull FileIcon fileIcon) {
         mFile = file;
         mFileIcon = fileIcon;
     }
@@ -25,5 +27,17 @@ public class FileModel {
 
     public FileIcon getFileIcon() {
         return mFileIcon;
+    }
+
+    public String getAbsolutePath() {
+        return mFile.getAbsolutePath();
+    }
+
+    public boolean isDirectory() {
+        return mFile.isDirectory();
+    }
+
+    public boolean isFile() {
+        return mFile.isFile();
     }
 }
