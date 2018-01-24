@@ -16,7 +16,7 @@ public class FileModel {
     private File mFile;
     private FileIcon mFileIcon;
 
-    public FileModel(@NonNull File file, @NonNull FileIcon fileIcon) {
+    public FileModel(@NonNull File file, FileIcon fileIcon) {
         mFile = file;
         mFileIcon = fileIcon;
     }

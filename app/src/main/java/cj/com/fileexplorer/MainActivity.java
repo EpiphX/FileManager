@@ -30,6 +30,16 @@ import cj.com.fileexplorer.broadcast_receivers.NavigateBroadcastReceiver;
 import cj.com.fileexplorer.views.BaseFragment;
 import cj.com.fileexplorer.views.CreditsActivity;
 
+/**
+ * The container view for the application. It contains the navigation drawer and provides options
+ * for the user to customize their experience with the underlying content views.
+ *
+ * When changes are made to this activity, it broadcasts events using the
+ * {@link ListToGridBroadcastReceiver} and {@link NavigateBroadcastReceiver}. This will allow for
+ * content views to listen to these events without being explicitly known by the MainActivity.
+ *
+ * Currently only supports navigation of the {@link cj.com.fileexplorer.views.DirectoryView}
+ */
 public class MainActivity extends AppCompatActivity {
     public static final String CHANGED_TO_GRID_KEY = "CHANGED_TO_GRID_KEY";
     private static final String TAG = "MainActivity-";
@@ -40,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Keeps track if changed to grid was selected.
     boolean mChangedToGrid = false;
-    private int mSelectedNavigationItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         createShortcuts();
-
 
         Toolbar toolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(toolbar);
@@ -146,7 +154,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigateToInternalStorage() {
-        mSelectedNavigationItem = R.id.navigation_internal_storage;
         Intent navigateToInternalIntent = new Intent(NavigateBroadcastReceiver
                 .INTENT_FILTER_STRING);
         navigateToInternalIntent.putExtra(NavigateBroadcastReceiver
@@ -156,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigateToExternalStorage() {
-        mSelectedNavigationItem = R.id.navigation_external_storage;
         Intent navigateToExternalIntent = new Intent(NavigateBroadcastReceiver
                 .INTENT_FILTER_STRING);
         navigateToExternalIntent.putExtra(NavigateBroadcastReceiver

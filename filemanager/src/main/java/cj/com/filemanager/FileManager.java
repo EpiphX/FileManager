@@ -23,6 +23,16 @@ import static android.os.FileObserver.MOVED_FROM;
 import static android.os.FileObserver.MOVED_TO;
 import static android.os.FileObserver.MOVE_SELF;
 
+/**
+ * File Manager manages the following responsibilities:
+ *
+ * It keeps a history of all visited directories in a stack, so that the history can be traversed.
+ * It keeps track of the current working directory.
+ * It subscribes a {@link FileObserver}, so that notifications of updates to the working
+ * directory are received.
+ * It provides access to the files of the current working directory.
+ *
+ */
 public class FileManager {
     private static final String TAG = "Files";
 
@@ -49,22 +59,38 @@ public class FileManager {
     // Listener to changes to the file manager's directory stack.
     private FileManagerListener mListener;
 
+    // Keeps a weak reference to the context, so that the final manager can use it to get the
+    // internal storage directory.
     private WeakReference<Context> mContextWeakReference;
 
-    // Called when either a configuration or low memory change has occurred. Will save off the
-    // current directory and the navigation history.
+    /**
+     * Called when either a configuration or low memory change has occurred. Will save off the
+     * current directory and the navigation history into the outState.
+     *
+     * @param outState
+     */
     public void onSaveInstanceState(Bundle outState) {
         outState.putString(CURRENT_DIRECTORY_KEY, mCurrentDirectoryPath);
         outState.putSerializable(DIRECTORY_HISTORY_KEY, mDirectoryHistory);
     }
 
-    // Called when a reload from a saved state has occurred. Will set the current directory and
-    // navigation stack to their respective saved values.
+    /**
+     * Called when a reload from a saved state has occurred. Will set the current directory and
+     * navigation stack to their respective saved values in the inState.
+     * @param inState
+     */
     public void onResumeState(Bundle inState) {
         mCurrentDirectoryPath = inState.getString(CURRENT_DIRECTORY_KEY, mCurrentDirectoryPath);
         mDirectoryHistory = (Stack<String>) inState.getSerializable(DIRECTORY_HISTORY_KEY);
     }
 
+    /**
+     * Upon activity or fragment destruction, this method allows for the FileManager to be
+     * commanded to close.
+     *
+     * When commanded to close it will close any running subscriptions such as the FileObserver
+     * in order to help prevent memory leaks.
+     */
     public void close() {
         // Close any listeners.
         if (mFileObserver != null) {
@@ -72,7 +98,13 @@ public class FileManager {
         }
     }
 
+    /**
+     * Listener interface to events that occur within the FileManager.
+     */
     public interface FileManagerListener {
+        /**
+         * Informs the listener that the directory has updated.
+         */
         void directoryHasUpdated();
     }
 
@@ -95,7 +127,8 @@ public class FileManager {
     /**
      * Gets all files for the current directory.
      *
-     * @param fileComparator
+     * @param fileComparator       A file comparator can be provided to specify a sorting
+     *                             algorithm that should be applied to the returned files.
      * @return
      */
     public ArrayList<FileModel> getAllFilesForCurrentDirectory(@Nullable Comparator<File> fileComparator) {
@@ -115,25 +148,27 @@ public class FileManager {
         }
 
         if (file != null) {
-            Log.d(TAG, "Size: " + file.length);
-            for (int i = 0; i < file.length; i++) {
-                Log.d(TAG, "FileName:" + file[i].getName());
-                Log.d(TAG, "File is directory - " + file[i].isDirectory());
-                Log.d(TAG, "File size is - " + file[i].getTotalSpace());
+            for (File aFile : file) {
 
                 FileIcon fileIcon;
-                if (file[i].isDirectory()) {
+                if (aFile.isDirectory()) {
                     fileIcon = null;
                 } else {
-                    fileIcon = new FileIcon(FileUtils.getFileExtension(file[i]));
+                    fileIcon = new FileIcon(FileUtils.getFileExtension(aFile));
                 }
-                fileModels.add(new FileModel(file[i], fileIcon));
+                fileModels.add(new FileModel(aFile, fileIcon));
             }
         }
 
         return fileModels;
     }
 
+    /**
+     * Gets the number of files in the current working directory.
+     *
+     * @return      Number of files in the directory.
+     *              0 if no files are found.
+     */
     public int getNumberOfFilesInCurrentDirectory() {
         if (TextUtils.isEmpty(mCurrentDirectoryPath)) {
             return 0;
@@ -145,8 +180,8 @@ public class FileManager {
         File file[] = f.listFiles();
 
         if (file != null) {
-            for (int i = 0; i < file.length; i++) {
-                if (file[i].isFile()) {
+            for (File aFile : file) {
+                if (aFile.isFile()) {
                     fileCount++;
                 }
             }
@@ -155,6 +190,12 @@ public class FileManager {
         return fileCount;
     }
 
+    /**
+     * Gets the number of directories in the current working directory.
+     *
+     * @return      Number of directories in the directory.
+     *              0 if no directories are found.
+     */
     public int getNumberOfDirectoriesInCurrentDirectory() {
         if (TextUtils.isEmpty(mCurrentDirectoryPath)) {
             return 0;
@@ -166,8 +207,8 @@ public class FileManager {
         File file[] = f.listFiles();
 
         if (file != null) {
-            for (int i = 0; i < file.length; i++) {
-                if (file[i].isDirectory()) {
+            for (File aFile : file) {
+                if (aFile.isDirectory()) {
                     directoryCount++;
                 }
             }
@@ -176,10 +217,18 @@ public class FileManager {
         return directoryCount;
     }
 
+    /**
+     * Gets the current working directory path.
+     */
     public String getCurrentDirectoryPath() {
         return mCurrentDirectoryPath;
     }
 
+    /**
+     * Navigates to the given directory path.
+     *
+     * @param absolutePath
+     */
     public void navigateToDirectory(String absolutePath) {
         // Before we navigate to the next directory add it to our stack.
         mDirectoryHistory.add(mCurrentDirectoryPath);
@@ -189,25 +238,43 @@ public class FileManager {
         updateFileObserver();
     }
 
+    /**
+     * Updates the file observer with the current working directory.
+     *
+     * If a file observer is currently running, then it will first stop the subscription.
+     */
     private void updateFileObserver() {
         if (mFileObserver != null) {
             mFileObserver.stopWatching();
         }
 
+        /**
+         * The FileObserver will listen to all create, moved to, delete, moved from, delete self,
+         * and moved self events made to the working directory.
+         */
         final int MASK = FileObserver.CREATE | MOVED_TO | DELETE | MOVED_FROM | DELETE_SELF |
                 MOVE_SELF;
 
         mFileObserver = new FileObserver(mCurrentDirectoryPath, MASK) {
             @Override
             public void onEvent(int event, @Nullable String path) {
+                // Inform the listener of the FileManager of any updates that fit our MASK.
                 if (mListener != null) {
                     mListener.directoryHasUpdated();
                 }
             }
         };
+
+        // Start watching. It is important to stop watching on destruction of the activity or view.
         mFileObserver.startWatching();
     }
 
+    /**
+     * Navigates to the previous directory in the directory's history.
+     *
+     * @return      True if a navigation to a previous directory was performed.
+     *              False if otherwise.
+     */
     public boolean navigateToPreviousDirectory() {
         if (mDirectoryHistory.size() != 0) {
             mCurrentDirectoryPath = mDirectoryHistory.pop();
@@ -218,11 +285,20 @@ public class FileManager {
         }
     }
 
-    public String getExternalStorageDirectory() {
+    /**
+     * Gets the environments external storage directory path.
+     */
+    public String getExternalStorageDirectoryPath() {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
-    public String getInternalStorageDirectory() {
+    /**
+     * Gets the internal storage for the application.
+     *
+     * @return      The internal storage if the context is not null.
+     *              Empty if the context has been released from memory.
+     */
+    public String getInternalStorageDirectoryPath() {
         Context context = mContextWeakReference.get();
 
         if (context != null) {

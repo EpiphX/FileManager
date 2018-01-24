@@ -1,6 +1,5 @@
 package cj.com.fileexplorer.presenters;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import java.lang.ref.WeakReference;
@@ -55,21 +54,21 @@ public class DirectoryPresenter implements FileManager.FileManagerListener {
 
     public void onNavigateToExternalStorage() {
         if (mFileManager.getCurrentDirectoryPath().equals(mFileManager
-                .getExternalStorageDirectory())) {
+                .getExternalStorageDirectoryPath())) {
             return;
         }
 
-        mFileManager.navigateToDirectory(mFileManager.getExternalStorageDirectory());
+        mFileManager.navigateToDirectory(mFileManager.getExternalStorageDirectoryPath());
         onFilesRequest();
     }
 
     public void onNavigateToInternalStorage() {
         if (mFileManager.getCurrentDirectoryPath().equals(mFileManager
-                .getInternalStorageDirectory())) {
+                .getInternalStorageDirectoryPath())) {
             return;
         }
 
-        mFileManager.navigateToDirectory(mFileManager.getInternalStorageDirectory());
+        mFileManager.navigateToDirectory(mFileManager.getInternalStorageDirectoryPath());
         onFilesRequest();
     }
 

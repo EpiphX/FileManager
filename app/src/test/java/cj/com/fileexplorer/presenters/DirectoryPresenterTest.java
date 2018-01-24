@@ -98,7 +98,7 @@ public class DirectoryPresenterTest {
     @Test
     public void onNavigateToExternalStorageWhenAlreadyThereTest() {
         Mockito.when(mFileManager.getCurrentDirectoryPath()).thenReturn("Test");
-        Mockito.when(mFileManager.getExternalStorageDirectory()).thenReturn("Test");
+        Mockito.when(mFileManager.getExternalStorageDirectoryPath()).thenReturn("Test");
 
         mDirectoryPresenter.onNavigateToExternalStorage();
 
@@ -108,7 +108,7 @@ public class DirectoryPresenterTest {
     @Test
     public void onNavigateToExternalStorageWhenNotThereTest() {
         Mockito.when(mFileManager.getCurrentDirectoryPath()).thenReturn("Different Directory");
-        Mockito.when(mFileManager.getExternalStorageDirectory()).thenReturn("Test");
+        Mockito.when(mFileManager.getExternalStorageDirectoryPath()).thenReturn("Test");
 
         mDirectoryPresenter.onNavigateToExternalStorage();
 
@@ -118,7 +118,7 @@ public class DirectoryPresenterTest {
     @Test
     public void onNavigateToInternalStorageWhenAlreadyThereTest() {
         Mockito.when(mFileManager.getCurrentDirectoryPath()).thenReturn("Test");
-        Mockito.when(mFileManager.getInternalStorageDirectory()).thenReturn("Test");
+        Mockito.when(mFileManager.getInternalStorageDirectoryPath()).thenReturn("Test");
 
         mDirectoryPresenter.onNavigateToInternalStorage();
 
@@ -128,7 +128,7 @@ public class DirectoryPresenterTest {
     @Test
     public void onNavigateToInternalStorageWhenNotThereTest() {
         Mockito.when(mFileManager.getCurrentDirectoryPath()).thenReturn("Different Directory");
-        Mockito.when(mFileManager.getInternalStorageDirectory()).thenReturn("Test");
+        Mockito.when(mFileManager.getInternalStorageDirectoryPath()).thenReturn("Test");
 
         mDirectoryPresenter.onNavigateToInternalStorage();
 
