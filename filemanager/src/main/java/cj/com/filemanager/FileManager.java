@@ -203,6 +203,4 @@ public class FileManager {
     public String getInternalStorageDirectory(Context context) {
         return context.getFilesDir().getAbsolutePath();
     }
-
-    // Add ability to get file type.
 }

@@ -64,8 +64,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     private Toolbar mainToolbar;
     private TextView mainToolbarTitleTextView;
 
-    private DividerItemDecoration mDividerItemDecoration;
-
     private TextView mNumberOfDirectoriesTextView;
     private TextView mNumberOfFilesTextView;
 
@@ -113,7 +111,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     public void changeListToGrid() {
         mShowGrid = true;
         mDirectoryAdapter.setShowGrid(mShowGrid);
-        mDirectoryRecyclerView.removeItemDecoration(mDividerItemDecoration);
         mDirectoryRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(NUMBER_OF_COLUMNS_IN_GRID, StaggeredGridLayoutManager.VERTICAL));
         mDirectoryAdapter.notifyDataSetChanged();
 
@@ -123,7 +120,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     public void changeGridToList() {
         mShowGrid = false;
         mDirectoryAdapter.setShowGrid(mShowGrid);
-        mDirectoryRecyclerView.addItemDecoration(mDividerItemDecoration, 0);
         mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL, false));
         mDirectoryAdapter.notifyDataSetChanged();
@@ -139,8 +135,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDirectoryPresenter = new DirectoryPresenter(this);
-        mDividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration
-                .VERTICAL);
 
         if (savedInstanceState != null) {
             mShowGrid = savedInstanceState.getBoolean(SHOW_GRID_LAYOUT_KEY,
@@ -174,10 +168,8 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         mDirectoryRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         if (mShowGrid) {
-            mDirectoryRecyclerView.removeItemDecoration(mDividerItemDecoration);
             mDirectoryRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(NUMBER_OF_COLUMNS_IN_GRID, StaggeredGridLayoutManager.VERTICAL));
         } else {
-            mDirectoryRecyclerView.addItemDecoration(mDividerItemDecoration, 0);
             mDirectoryRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                     LinearLayoutManager.VERTICAL, false));
         }
@@ -327,10 +319,7 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void showExtendedInformationOnFile(FileModel fileModel) {
-
-        if (fileModel.getFile().isDirectory()) {
-
-        } else {
+        if (fileModel.getFile().isFile()) {
             String fileSize = Formatter.formatFileSize(getContext(), fileModel.getFile().length());
 
             View view = LayoutInflater.from(getContext()).inflate(R.layout

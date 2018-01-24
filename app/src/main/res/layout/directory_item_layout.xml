@@ -2,24 +2,57 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:paddingEnd="@dimen/activity_horizontal_margin">
+    android:background="@color/white">
 
-    <TextView
-        android:id="@+id/directoryItemTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/directoryItemThumbnailImageView"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_margin="@dimen/activity_horizontal_margin"
-        android:drawablePadding="@dimen/activity_horizontal_margin"
-        android:drawableStart="@drawable/ic_pdf"
-        android:gravity="center_vertical"
-        android:text="Example File of long length and blah"
-        android:singleLine="true"
-        android:ellipsize="middle"
+        android:background="@drawable/circle"
+        android:padding="12dp"
+        android:src="@drawable/ic_folder_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/directoryItemTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:ellipsize="middle"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:text="Example File of long length and blah"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/directoryItemSizeTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/directoryItemThumbnailImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        />
+
+
+    <TextView
+        android:id="@+id/directoryItemSizeTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:text="4 kB"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/directoryItemThumbnailImageView"
+        app:layout_constraintTop_toBottomOf="@id/directoryItemTextView"
+        app:layout_constraintVertical_bias="0"
+        app:layout_constraintVertical_chainStyle="packed"
+        />
+
 
 </android.support.constraint.ConstraintLayout>

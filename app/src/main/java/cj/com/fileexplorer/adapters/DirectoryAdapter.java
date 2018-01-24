@@ -2,6 +2,7 @@ package cj.com.fileexplorer.adapters;
 
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,21 +101,38 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
 
     public class DirectoryViewHolder extends RecyclerView.ViewHolder {
         public TextView mFileNameTextView;
+        public TextView mFileSizeTextView;
+        public ImageView mDirectoryItemThumbnailImageView;
 
         public DirectoryViewHolder(View itemView) {
             super(itemView);
             mFileNameTextView = itemView.findViewById(R.id.directoryItemTextView);
+            mFileSizeTextView = itemView.findViewById(R.id.directoryItemSizeTextView);
+            mDirectoryItemThumbnailImageView = itemView.findViewById(R.id
+                    .directoryItemThumbnailImageView);
         }
 
         public void setData(FileModel fileModel) {
             mFileNameTextView.setText(fileModel.getFile().getName());
 
+
+
             if (fileModel.getFile().isDirectory()) {
-                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable
-                        .ic_folder_black_24dp, 0,0,0);
+                mDirectoryItemThumbnailImageView.setImageDrawable
+                        (mDirectoryItemThumbnailImageView.getContext().getDrawable(R.drawable
+                                .ic_folder_white_24dp));
+
+                mFileSizeTextView.setVisibility(View.GONE);
             } else {
-                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(fileModel.getFileIcon()
-                                .getDrawableId(), 0,0, 0);
+                mDirectoryItemThumbnailImageView.setImageDrawable
+                        (mDirectoryItemThumbnailImageView.getContext().getDrawable(fileModel
+                                .getFileIcon().getDrawableId()));
+
+                String fileSize = Formatter.formatFileSize(mFileSizeTextView.getContext(),
+                        fileModel.getFile().length());
+
+                mFileSizeTextView.setText(fileSize);
+                mFileSizeTextView.setVisibility(View.VISIBLE);
             }
         }
 
@@ -133,12 +151,15 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
             mFileNameTextView.setText(fileModel.getFile().getName());
 
             if (fileModel.getFile().isDirectory()) {
-                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable
-                        .ic_folder_black_24dp, 0,0,0);
+                mDirectoryItemThumbnailImageView.setImageDrawable
+                        (mDirectoryItemThumbnailImageView.getContext().getDrawable(R.drawable
+                                .ic_folder_white_24dp));
                 mFileImageView.setVisibility(View.GONE);
+                mFileSizeTextView.setVisibility(View.GONE);
             } else {
-                mFileNameTextView.setCompoundDrawablesRelativeWithIntrinsicBounds(fileModel.getFileIcon()
-                        .getDrawableId(), 0,0, 0);
+                mDirectoryItemThumbnailImageView.setImageDrawable
+                        (mDirectoryItemThumbnailImageView.getContext().getDrawable(fileModel
+                                .getFileIcon().getDrawableId()));
 
                 mFileImageView.setVisibility(View.VISIBLE);
                 Uri uri = Uri.fromFile(fileModel.getFile());
@@ -147,6 +168,12 @@ public class DirectoryAdapter extends RecyclerView.Adapter<DirectoryAdapter.Dire
                         .placeholder(R.drawable.ic_insert_drive_file_black_24dp)
                         .fit()
                         .into(mFileImageView);
+
+                String fileSize = Formatter.formatFileSize(mFileSizeTextView.getContext(),
+                        fileModel.getFile().length());
+
+                mFileSizeTextView.setText(fileSize);
+                mFileSizeTextView.setVisibility(View.VISIBLE);
             }
         }
     }
