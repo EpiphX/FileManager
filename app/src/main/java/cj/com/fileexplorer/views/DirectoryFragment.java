@@ -203,19 +203,6 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
         LocalBroadcastManager.getInstance(getContext()).registerReceiver
                 (mNavigateBroadcastReceiver, new IntentFilter(NavigateBroadcastReceiver
                         .INTENT_FILTER_STRING));
-
-//        if (getActivity().getIntent().hasExtra(NavigateBroadcastReceiver.NAVIGATE_ACTION)) {
-//            String navigateAction = getActivity().getIntent().getStringExtra(NavigateBroadcastReceiver.NAVIGATE_ACTION);
-//
-//            switch(navigateAction) {
-//                case NavigateBroadcastReceiver.NAVIGATE_TO_EXTERNAL_STORAGE:
-//                    navigateToExternalStorage();
-//                    break;
-//                case NavigateBroadcastReceiver.NAVIGATE_TO_INTERNAL_STORAGE:
-//                    navigateToInternalStorage(getContext());
-//                    break;
-//            }
-//        }
     }
 
     @Override
@@ -340,17 +327,20 @@ public class DirectoryFragment extends BaseFragment implements DirectoryView, Di
 
     @Override
     public void showExtendedInformationOnFile(FileModel fileModel) {
-        String fileSize = Formatter.formatFileSize(getContext(), fileModel.getFile().length());
-
 
         if (fileModel.getFile().isDirectory()) {
 
         } else {
+            String fileSize = Formatter.formatFileSize(getContext(), fileModel.getFile().length());
+
             View view = LayoutInflater.from(getContext()).inflate(R.layout
                     .file_properties_layout, null);
 
             TextView fileNameTextView = view.findViewById(R.id.fileNameTextView);
             fileNameTextView.setText(fileModel.getFile().getName());
+
+            TextView fileLocationTextView = view.findViewById(R.id.fileLocationTextView);
+            fileLocationTextView.setText(fileModel.getFile().getAbsolutePath());
 
             TextView fileSizeTextView = view.findViewById(R.id.fileSizeTextView);
             fileSizeTextView.setText(fileSize);
