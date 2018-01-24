@@ -5,9 +5,11 @@ import java.io.File;
 import cj.com.filemanager.FileIcon;
 
 /**
- * Created by EpiphX on 1/14/18.
+ * Model that contains a file and its respective file icon.
+ *
+ * @see FileIcon for how a files icon is specified.
+ * @see File
  */
-
 public class FileModel {
     private File mFile;
     private FileIcon mFileIcon;

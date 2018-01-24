@@ -24,16 +24,20 @@ public class CreditsAdapter extends RecyclerView.Adapter<CreditsAdapter.ViewHold
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.flat_icon_credit_cell, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.credit_cell, parent, false);
         return new CreditsAdapter.ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.mTextView.setCompoundDrawablesWithIntrinsicBounds(holder.mTextView.getContext()
-                .getDrawable(mCreditModels.get(position).getDrawableResourceId()), null, null, null);
-        holder.mTextView.setCompoundDrawablePadding(holder.mTextView.getResources()
-                .getDimensionPixelSize(R.dimen.activity_horizontal_margin));
+        holder.mCreditNameTextView.setText(mCreditModels.get(position).getName());
+        holder.mCreditDescriptionTextView.setText(mCreditModels.get(position).getDescription());
+        if (mCreditModels.get(position).getDrawableResourceId() != -1) {
+            holder.mCreditDescriptionTextView.setCompoundDrawablesWithIntrinsicBounds(holder.mCreditDescriptionTextView.getContext()
+                    .getDrawable(mCreditModels.get(position).getDrawableResourceId()), null, null, null);
+            holder.mCreditDescriptionTextView.setCompoundDrawablePadding(holder.mCreditDescriptionTextView.getResources()
+                    .getDimensionPixelSize(R.dimen.activity_horizontal_margin));
+        }
     }
 
     @Override
@@ -47,10 +51,12 @@ public class CreditsAdapter extends RecyclerView.Adapter<CreditsAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView mTextView;
+        private TextView mCreditNameTextView;
+        private TextView mCreditDescriptionTextView;
         public ViewHolder(View itemView) {
             super(itemView);
-            mTextView = itemView.findViewById(R.id.creditTextView);
+            mCreditNameTextView = itemView.findViewById(R.id.creditNameTextView);
+            mCreditDescriptionTextView = itemView.findViewById(R.id.creditDescriptionTextView);
         }
     }
 }

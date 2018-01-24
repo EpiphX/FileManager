@@ -4,9 +4,8 @@ import java.io.File;
 import java.util.Comparator;
 
 /**
- * Created by EpiphX on 1/22/18.
+ * Comparator that will sort first by if a file is a directory and then alphabetically.
  */
-
 public class FileDirectoryComparator implements Comparator<File> {
     @Override
     public int compare(File fileA, File fileB) {

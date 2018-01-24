@@ -5,11 +5,13 @@ import android.content.Context;
 import java.util.ArrayList;
 
 import cj.com.filemanager.models.FileModel;
+import cj.com.fileexplorer.presenters.DirectoryPresenter;
 
 /**
- * Created by EpiphX on 1/14/18.
+ * View that serves to display directories and their contents.
+ *
+ * Paired with a directory presenter {@link DirectoryPresenter}
  */
-
 public interface DirectoryView {
     void changeGridToList();
     void changeListToGrid();

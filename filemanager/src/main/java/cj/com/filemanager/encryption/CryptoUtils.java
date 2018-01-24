@@ -1,8 +1,5 @@
 package cj.com.filemanager.encryption;
 
-
-import android.media.MediaCodec;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,11 +25,13 @@ public class CryptoUtils {
 
     public static void encrypt(String key, File inputFile, File outputFile)
             throws GeneralSecurityException {
+        // I need to make the key 256 bits... Perhaps by using some hash algorithm?
         doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
     }
 
     public static void decrypt(String key, File inputFile, File outputFile)
             throws GeneralSecurityException {
+        // I need to make the key 256 bits... Perhaps by using some hash algorithm?
         doCrypto(Cipher.DECRYPT_MODE, key, inputFile, outputFile);
     }
 
